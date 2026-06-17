@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Building2, FolderKanban, PauseCircle, ShieldAlert, Users } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Activity, Building2, FolderKanban, PauseCircle, ShieldAlert, Users } from "lucide-react";
 import { DataSourceBadge } from "@/components/DataSourceBadge";
 import { DashboardCard } from "@/components/DashboardCard";
 import { DashboardShell } from "@/components/DashboardShell";
@@ -9,7 +9,7 @@ import { EmptyState, ErrorState, LoadingState } from "@/components/ResourceState
 import { StatusBadge } from "@/components/StatusBadge";
 import { useAllDisputes, useAllUsers } from "@/hooks/use-admin";
 import { useProjects } from "@/hooks/use-projects";
-import { updateDisputeStatus, updateProjectStatus } from "@/services/pactoraService";
+import { getAuditLogs, updateDisputeStatus, updateProjectStatus, type AuditLogRow } from "@/services/pactoraService";
 
 export default function AdminDashboardPage() {
   const icons = [Users, FolderKanban, ShieldAlert, Building2];
@@ -17,6 +17,8 @@ export default function AdminDashboardPage() {
   const { data: users, loading: usersLoading, error: usersError } = useAllUsers();
   const { data: disputes, loading: disputesLoading, error: disputesError, refetch: refetchDisputes } = useAllDisputes();
   const [adminError, setAdminError] = useState<string | null>(null);
+  const [auditLogs, setAuditLogs] = useState<AuditLogRow[]>([]);
+  const [auditError, setAuditError] = useState<string | null>(null);
   const adminStats = [
     { label: "Users", value: String(users.length), delta: source },
     { label: "Projects", value: String(projects.length), delta: source },
@@ -30,6 +32,7 @@ export default function AdminDashboardPage() {
     try {
       await updateDisputeStatus(id, status);
       await refetchDisputes();
+      await loadAuditLogs();
     } catch (error) {
       setAdminError(error instanceof Error ? error.message : "Dispute update failed.");
     }
@@ -41,10 +44,25 @@ export default function AdminDashboardPage() {
     try {
       await updateProjectStatus(id, "paused");
       await refetchProjects();
+      await loadAuditLogs();
     } catch (error) {
       setAdminError(error instanceof Error ? error.message : "Project update failed.");
     }
   }
+
+  async function loadAuditLogs() {
+    try {
+      const result = await getAuditLogs();
+      setAuditLogs(result.data);
+      setAuditError(null);
+    } catch (error) {
+      setAuditError(error instanceof Error ? error.message : "Audit logs could not be loaded.");
+    }
+  }
+
+  useEffect(() => {
+    void loadAuditLogs();
+  }, []);
 
   return (
     <DashboardShell
@@ -112,6 +130,30 @@ export default function AdminDashboardPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+      <section className="mt-6 rounded-lg border border-slate-200 bg-white p-5 shadow-soft">
+        <div className="flex items-center gap-2">
+          <Activity size={20} className="text-purple" />
+          <h2 className="text-lg font-black text-navy">Audit log</h2>
+        </div>
+        {auditError ? <div className="mt-4"><ErrorState message={`Audit log request failed: ${auditError}`} /></div> : null}
+        {!auditError && auditLogs.length === 0 ? <div className="mt-4"><EmptyState message="No audit events yet." /></div> : null}
+        <div className="mt-4 space-y-3">
+          {auditLogs.map((log) => (
+            <div key={log.id} className="rounded-lg bg-cloud p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="font-black text-navy">{log.action.replaceAll(".", " ")}</p>
+                <p className="text-xs font-black uppercase tracking-wide text-slate-400">{new Date(log.created_at).toLocaleString()}</p>
+              </div>
+              <p className="mt-2 text-sm font-semibold text-slate-500">
+                {log.project_id ? `Project ${log.project_id.slice(0, 8)}` : "Platform"} · {log.user_id ? `User ${log.user_id.slice(0, 8)}` : "System"}
+              </p>
+              <pre className="mt-3 max-h-24 overflow-auto rounded-lg bg-white p-3 text-xs font-semibold text-slate-500">
+                {JSON.stringify(log.metadata, null, 2)}
+              </pre>
+            </div>
+          ))}
         </div>
       </section>
     </DashboardShell>

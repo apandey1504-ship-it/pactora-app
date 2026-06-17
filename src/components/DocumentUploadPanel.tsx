@@ -52,7 +52,8 @@ export function DocumentUploadPanel({
       await uploadDocument({
         projectId,
         uploadedBy,
-        file
+        file,
+        category
       });
       formElement.reset();
       await onUploaded?.();
@@ -95,7 +96,8 @@ export function DocumentUploadPanel({
           <p className="rounded-lg bg-cloud p-4 text-sm font-bold text-slate-500">No documents uploaded yet.</p>
         ) : null}
         {documents.map((document) => (
-          <a key={document.id} href={document.fileUrl} className="rounded-lg border border-slate-100 bg-cloud p-4 transition hover:border-purple">
+          <a key={document.id} href={document.fileUrl} target="_blank" rel="noreferrer" className="rounded-lg border border-slate-100 bg-cloud p-4 transition hover:border-purple">
+            {document.category ? <p className="mb-2 text-xs font-black uppercase tracking-wide text-purple">{document.category}</p> : null}
             <p className="font-black text-navy">{document.name}</p>
             <p className="mt-2 text-sm font-semibold text-slate-500">{document.createdAt}</p>
           </a>

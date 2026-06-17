@@ -28,6 +28,8 @@ export type DocumentInsert = Database["public"]["Tables"]["documents"]["Insert"]
 export type Payment = Database["public"]["Tables"]["payments"]["Row"];
 export type Dispute = Database["public"]["Tables"]["disputes"]["Row"];
 export type TrustScoreRow = Database["public"]["Tables"]["trust_scores"]["Row"];
+export type AuditLogRow = Database["public"]["Tables"]["audit_logs"]["Row"];
+export type AuditLogInsert = Database["public"]["Tables"]["audit_logs"]["Insert"];
 
 function requireSupabase() {
   if (!supabase) {
@@ -94,6 +96,7 @@ function mapDocument(row: DocumentRow): ProjectDocument {
     projectId: row.project_id,
     name: row.file_name,
     fileUrl: row.file_url,
+    category: row.file_type ?? "Document",
     createdAt: formatDate(row.created_at)
   };
 }
@@ -125,6 +128,38 @@ function ensureData<T>(data: T | null, message = "Supabase did not return a reco
   }
 
   return data;
+}
+
+async function getAuthenticatedUserId() {
+  const client = requireSupabase();
+
+  if (!client) {
+    return mockUser.id;
+  }
+
+  const { data, error } = await client.auth.getUser();
+  throwIfError(error);
+
+  return data.user?.id ?? mockUser.id;
+}
+
+async function writeAuditLog(input: AuditLogInsert) {
+  const client = requireSupabase();
+
+  if (!client) {
+    return;
+  }
+
+  const { error } = await client.from("audit_logs").insert([
+    {
+      ...input,
+      metadata: input.metadata ?? {}
+    }
+  ]);
+
+  if (error) {
+    console.warn("Pactora audit log skipped:", error.message);
+  }
 }
 
 export async function getCurrentProfile(): Promise<ServiceResult<Profile | null>> {
@@ -211,6 +246,17 @@ export async function createProject(input: {
   ]);
   throwIfError(participantError);
 
+  await writeAuditLog({
+    user_id: createdBy,
+    project_id: projectId,
+    action: "project.created",
+    metadata: {
+      title: input.title,
+      project_value: payload.project_value,
+      due_date: payload.due_date
+    }
+  });
+
   return { data: mapProject(payload as ProjectRow), source: "supabase" };
 }
 
@@ -253,6 +299,12 @@ export async function updateProjectStatus(id: string, status: ProjectStatus): Pr
 
   const { data, error } = await client.from("projects").update({ status }).eq("id", id).select("*").single();
   throwIfError(error);
+  await writeAuditLog({
+    user_id: await getAuthenticatedUserId(),
+    project_id: id,
+    action: "project.status_updated",
+    metadata: { status }
+  });
 
   return { data: mapProject(ensureData(data)), source: "supabase" };
 }
@@ -294,6 +346,12 @@ export async function acceptProject(projectId: string): Promise<ServiceResult<Pr
     .select("*")
     .single();
   throwIfError(error);
+  await writeAuditLog({
+    user_id: userId,
+    project_id: projectId,
+    action: "project.accepted",
+    metadata: { contractor_company_id: contractorCompanyId }
+  });
 
   return { data: mapProject(ensureData(data)), source: "supabase" };
 }
@@ -307,6 +365,17 @@ export async function createMilestone(input: MilestoneInsert): Promise<ServiceRe
 
   const { data, error } = await client.from("milestones").insert([input]).select("*").single();
   throwIfError(error);
+  await writeAuditLog({
+    user_id: await getAuthenticatedUserId(),
+    project_id: input.project_id,
+    action: "milestone.created",
+    metadata: {
+      milestone_id: data?.id,
+      title: input.title,
+      amount: input.amount,
+      due_date: input.due_date
+    }
+  });
 
   return { data: mapMilestone(ensureData(data)), source: "supabase" };
 }
@@ -342,8 +411,18 @@ async function updateMilestoneStatus(id: string, status: MilestoneStatus) {
 
   const { data, error } = await client.from("milestones").update({ status, ...timestamps }).eq("id", id).select("*").single();
   throwIfError(error);
+  const milestone = ensureData(data);
+  await writeAuditLog({
+    user_id: await getAuthenticatedUserId(),
+    project_id: milestone.project_id,
+    action: "milestone.status_updated",
+    metadata: {
+      milestone_id: id,
+      status
+    }
+  });
 
-  return { data: mapMilestone(ensureData(data)), source: "supabase" as const };
+  return { data: mapMilestone(milestone), source: "supabase" as const };
 }
 
 export function submitMilestone(id: string) {
@@ -367,6 +446,18 @@ export async function createChangeRequest(input: ChangeRequestInsert): Promise<S
 
   const { data, error } = await client.from("change_requests").insert([input]).select("*").single();
   throwIfError(error);
+  await writeAuditLog({
+    user_id: input.requested_by,
+    project_id: input.project_id,
+    action: "change_request.created",
+    metadata: {
+      change_request_id: data?.id,
+      title: input.title,
+      impact_cost: input.impact_cost,
+      impact_days: input.impact_days,
+      status: input.status
+    }
+  });
 
   return { data: mapChangeRequest(ensureData(data)), source: "supabase" };
 }
@@ -414,8 +505,18 @@ async function updateChangeRequest(id: string, patch: Database["public"]["Tables
 
   const { data, error } = await client.from("change_requests").update(patch).eq("id", id).select("*").single();
   throwIfError(error);
+  const changeRequest = ensureData(data);
+  await writeAuditLog({
+    user_id: await getAuthenticatedUserId(),
+    project_id: changeRequest.project_id,
+    action: "change_request.updated",
+    metadata: {
+      change_request_id: id,
+      patch
+    }
+  });
 
-  return { data: mapChangeRequest(ensureData(data)), source: "supabase" as const };
+  return { data: mapChangeRequest(changeRequest), source: "supabase" as const };
 }
 
 async function getPrimaryCompanyId(userId: string) {
@@ -482,6 +583,16 @@ export async function sendMessage(input: MessageInsert): Promise<ServiceResult<M
 
   const { data, error } = await client.from("messages").insert([input]).select("*").single();
   throwIfError(error);
+  await writeAuditLog({
+    user_id: input.sender_id,
+    project_id: input.project_id,
+    action: "message.sent",
+    metadata: {
+      message_id: data?.id,
+      message_type: input.message_type,
+      preview: input.message.slice(0, 120)
+    }
+  });
 
   return { data: mapMessage(ensureData(data)), source: "supabase" };
 }
@@ -535,6 +646,7 @@ export async function uploadDocument(
         milestoneId?: string | null;
         uploadedBy: string;
         file: File;
+        category?: string;
       }
 ): Promise<ServiceResult<ProjectDocument | null>> {
   const client = requireSupabase();
@@ -548,16 +660,15 @@ export async function uploadDocument(
   if ("file" in input) {
     const path = `${input.projectId}/${crypto.randomUUID()}-${input.file.name}`;
     const upload = await client.storage.from("pactora-documents").upload(path, input.file);
-    const { data: publicUrlData } = upload.error
-      ? { data: { publicUrl: `pending-upload://${path}` } }
-      : client.storage.from("pactora-documents").getPublicUrl(path);
+    throwIfError(upload.error);
+    const { data: publicUrlData } = client.storage.from("pactora-documents").getPublicUrl(path);
     documentInput = {
       project_id: input.projectId,
       milestone_id: input.milestoneId ?? null,
       uploaded_by: input.uploadedBy,
       file_name: input.file.name,
       file_url: publicUrlData.publicUrl,
-      file_type: input.file.type
+      file_type: input.category ?? input.file.type ?? "Document"
     };
   } else {
     documentInput = input;
@@ -565,6 +676,17 @@ export async function uploadDocument(
 
   const { data, error } = await client.from("documents").insert([documentInput]).select("*").single();
   throwIfError(error);
+  await writeAuditLog({
+    user_id: documentInput.uploaded_by,
+    project_id: documentInput.project_id,
+    action: "document.uploaded",
+    metadata: {
+      document_id: data?.id,
+      milestone_id: documentInput.milestone_id,
+      file_name: documentInput.file_name,
+      file_type: documentInput.file_type
+    }
+  });
 
   return { data: mapDocument(ensureData(data)), source: "supabase" };
 }
@@ -663,6 +785,33 @@ export async function updateDisputeStatus(id: string, status: DisputeStatus): Pr
 
   const { data, error } = await client.from("disputes").update({ status }).eq("id", id).select("*").single();
   throwIfError(error);
+  const dispute = ensureData(data);
+  await writeAuditLog({
+    user_id: await getAuthenticatedUserId(),
+    project_id: dispute.project_id,
+    action: "dispute.status_updated",
+    metadata: {
+      dispute_id: id,
+      status
+    }
+  });
 
-  return { data: ensureData(data), source: "supabase" };
+  return { data: dispute, source: "supabase" };
+}
+
+export async function getAuditLogs(limit = 25): Promise<ServiceResult<AuditLogRow[]>> {
+  const client = requireSupabase();
+
+  if (!client) {
+    return { data: [], source: "mock" };
+  }
+
+  const { data, error } = await client
+    .from("audit_logs")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  throwIfError(error);
+
+  return { data: data ?? [], source: "supabase" };
 }

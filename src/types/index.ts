@@ -54,6 +54,7 @@ export type ProjectDocument = {
   projectId: string;
   name: string;
   fileUrl: string;
+  category?: string;
   createdAt: string;
 };
 
