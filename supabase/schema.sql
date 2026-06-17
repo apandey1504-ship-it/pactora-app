@@ -1,0 +1,7 @@
+-- Pactora schema is managed through migrations.
+-- Apply in order:
+-- 1. supabase/migrations/001_initial_schema.sql
+-- 2. supabase/migrations/002_rls_policies.sql
+--
+-- Then load sample data from:
+-- supabase/seed.sql

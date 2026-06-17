@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pactora Preview</title>
+    <style>
+      :root {
+        --navy: #081a33;
+        --purple: #635bff;
+        --white: #ffffff;
+        --cloud: #f7f8fc;
+        --emerald: #00c48c;
+        --slate: #5c667a;
+        --line: #e5e8f0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--cloud);
+        color: var(--navy);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .header {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        border-bottom: 1px solid rgba(229, 232, 240, 0.9);
+        background: rgba(255, 255, 255, 0.86);
+        backdrop-filter: blur(18px);
+      }
+
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 76px;
+        gap: 24px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 22px;
+        font-weight: 900;
+      }
+
+      .logo-mark {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        place-items: center;
+        border-radius: 8px;
+        background: var(--navy);
+        color: var(--white);
+        box-shadow: 0 18px 60px rgba(99, 91, 255, 0.22);
+      }
+
+      .links {
+        display: flex;
+        gap: 26px;
+        color: var(--slate);
+        font-size: 14px;
+        font-weight: 750;
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 14px;
+        font-weight: 850;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        border-radius: 8px;
+        padding: 0 18px;
+        border: 1px solid transparent;
+        font-weight: 900;
+      }
+
+      .button.primary {
+        background: var(--purple);
+        color: var(--white);
+        box-shadow: 0 18px 60px rgba(99, 91, 255, 0.26);
+      }
+
+      .button.dark {
+        background: var(--navy);
+        color: var(--white);
+      }
+
+      .button.light {
+        background: var(--white);
+        border-color: var(--line);
+      }
+
+      .hero {
+        overflow: hidden;
+        background-color: var(--white);
+        background-image:
+          linear-gradient(rgba(99, 91, 255, 0.07) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(99, 91, 255, 0.07) 1px, transparent 1px);
+        background-size: 42px 42px;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 0.92fr 1.08fr;
+        gap: 54px;
+        padding-top: 86px;
+        padding-bottom: 104px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+        border-radius: 999px;
+        background: rgba(99, 91, 255, 0.1);
+        color: var(--purple);
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      h1 {
+        margin: 28px 0 0;
+        max-width: 720px;
+        font-size: clamp(52px, 7vw, 82px);
+        line-height: 0.94;
+        letter-spacing: 0;
+      }
+
+      .subhead {
+        margin: 24px 0 0;
+        max-width: 660px;
+        color: var(--slate);
+        font-size: 19px;
+        line-height: 1.7;
+        font-weight: 550;
+      }
+
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 34px;
+      }
+
+      .signals {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        margin-top: 36px;
+        color: var(--slate);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        margin-right: 8px;
+        border-radius: 50%;
+        background: var(--emerald);
+      }
+
+      .mockup {
+        position: relative;
+      }
+
+      .halo {
+        position: absolute;
+        inset: 40px;
+        background: rgba(99, 91, 255, 0.2);
+        filter: blur(70px);
+      }
+
+      .dashboard {
+        position: relative;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--white);
+        padding: 16px;
+        box-shadow: 0 26px 80px rgba(99, 91, 255, 0.24);
+      }
+
+      .screen {
+        border-radius: 8px;
+        background: var(--navy);
+        color: var(--white);
+        padding: 22px;
+      }
+
+      .screen-top,
+      .card-top,
+      .split {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .muted {
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 14px;
+        font-weight: 750;
+      }
+
+      .metric {
+        margin-top: 4px;
+        font-size: 34px;
+        font-weight: 950;
+      }
+
+      .score {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+        background: var(--white);
+        color: var(--navy);
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .dash-card {
+        margin-top: 14px;
+        border-radius: 8px;
+        background: var(--white);
+        color: var(--navy);
+        padding: 16px;
+      }
+
+      .status {
+        border-radius: 999px;
+        background: rgba(0, 196, 140, 0.12);
+        color: #008a64;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 950;
+      }
+
+      .bar {
+        height: 8px;
+        margin-top: 16px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #eef1f6;
+      }
+
+      .bar span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: var(--emerald);
+      }
+
+      .mini-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 16px;
+      }
+
+      .mini {
+        border-radius: 8px;
+        padding: 16px;
+        background: var(--cloud);
+        font-weight: 900;
+      }
+
+      .mini.purple {
+        background: var(--purple);
+        color: var(--white);
+      }
+
+      .trust-bar {
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        background: var(--white);
+        padding: 20px 0;
+      }
+
+      .trust-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 18px;
+        color: var(--slate);
+        font-size: 14px;
+        font-weight: 950;
+      }
+
+      .section {
+        padding: 80px 0;
+      }
+
+      .eyebrow {
+        color: var(--purple);
+        font-size: 14px;
+        font-weight: 950;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h2 {
+        max-width: 720px;
+        margin: 12px 0 0;
+        font-size: clamp(34px, 4vw, 46px);
+        line-height: 1.05;
+        letter-spacing: 0;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-top: 38px;
+      }
+
+      .feature,
+      .price,
+      .role-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--white);
+        padding: 24px;
+        box-shadow: 0 18px 60px rgba(8, 26, 51, 0.08);
+      }
+
+      .icon {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        border-radius: 8px;
+        background: rgba(99, 91, 255, 0.1);
+        color: var(--purple);
+        font-weight: 950;
+      }
+
+      .feature h3,
+      .role-card h3 {
+        margin: 18px 0 0;
+        font-size: 19px;
+      }
+
+      .feature p,
+      .role-card p,
+      .price p {
+        color: var(--slate);
+        line-height: 1.65;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .dark-band {
+        background: var(--navy);
+        color: var(--white);
+      }
+
+      .dark-band .eyebrow {
+        color: var(--emerald);
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-top: 34px;
+      }
+
+      .step {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 24px;
+      }
+
+      .step strong {
+        color: rgba(255, 255, 255, 0.18);
+        font-size: 48px;
+      }
+
+      .step h3 {
+        margin: 18px 0 0;
+        font-size: 22px;
+      }
+
+      .step p {
+        color: rgba(255, 255, 255, 0.68);
+        line-height: 1.65;
+        font-weight: 600;
+      }
+
+      .role-grid,
+      .price-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-top: 36px;
+      }
+
+      ul {
+        margin: 18px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      li {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+        color: var(--slate);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      li::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        margin-top: 6px;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        background: var(--emerald);
+      }
+
+      .price.featured {
+        background: var(--navy);
+        color: var(--white);
+        border-color: var(--purple);
+        box-shadow: 0 18px 70px rgba(99, 91, 255, 0.28);
+      }
+
+      .price.featured p,
+      .price.featured li {
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .price strong {
+        display: block;
+        margin-top: 16px;
+        font-size: 42px;
+        letter-spacing: 0;
+      }
+
+      .footer {
+        background: var(--white);
+        padding: 34px 0;
+      }
+
+      .footer .wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        font-weight: 950;
+      }
+
+      @media (max-width: 920px) {
+        .links {
+          display: none;
+        }
+
+        .hero-grid,
+        .cards,
+        .steps,
+        .role-grid,
+        .price-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-grid {
+          padding-top: 52px;
+          padding-bottom: 72px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="wrap nav">
+        <a class="logo" href="#">
+          <span class="logo-mark">P</span>
+          Pactora
+        </a>
+        <nav class="links">
+          <a href="#product">Product</a>
+          <a href="#solutions">Solutions</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#resources">Resources</a>
+          <a href="#company">Company</a>
+        </nav>
+        <div class="actions">
+          <a href="#login">Login</a>
+          <a class="button dark" href="#signup">Get Started</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="wrap hero-grid">
+          <div>
+            <div class="pill">✦ Contract assurance for modern teams</div>
+            <h1>Every Agreement. Protected.</h1>
+            <p class="subhead">Pactora helps businesses manage contracts, milestones, changes, approvals, payments, and trust in one secure platform.</p>
+            <div class="cta-row">
+              <a class="button primary" href="#signup">Get Started Free</a>
+              <a class="button light" href="#demo">Book a Demo</a>
+            </div>
+            <div class="signals">
+              <span><span class="dot"></span>On-time approvals</span>
+              <span><span class="dot"></span>Verified business</span>
+              <span><span class="dot"></span>Low dispute risk</span>
+              <span><span class="dot"></span>Clean payment history</span>
+            </div>
+          </div>
+
+          <div class="mockup">
+            <div class="halo"></div>
+            <div class="dashboard">
+              <div class="screen">
+                <div class="screen-top">
+                  <div>
+                    <div class="muted">Protected value</div>
+                    <div class="metric">$1.8M</div>
+                  </div>
+                  <div class="score"><span class="dot"></span>94 Excellent</div>
+                </div>
+                <div class="dash-card">
+                  <div class="card-top">
+                    <div>
+                      <strong>Aurora Vendor Portal</strong>
+                      <div style="color: var(--slate); font-size: 14px; font-weight: 750; margin-top: 4px;">$84,000</div>
+                    </div>
+                    <span class="status">Active</span>
+                  </div>
+                  <div class="bar"><span style="width: 68%;"></span></div>
+                </div>
+                <div class="dash-card">
+                  <div class="card-top">
+                    <div>
+                      <strong>Ledger Migration</strong>
+                      <div style="color: var(--slate); font-size: 14px; font-weight: 750; margin-top: 4px;">$126,500</div>
+                    </div>
+                    <span class="status" style="background: rgba(99, 91, 255, 0.1); color: var(--purple);">In review</span>
+                  </div>
+                  <div class="bar"><span style="width: 42%;"></span></div>
+                </div>
+              </div>
+              <div class="mini-grid">
+                <div class="mini">Next milestone<br /><span style="color: var(--slate); font-size: 14px;">Prototype review</span></div>
+                <div class="mini purple">Change impact<br /><span style="color: rgba(255,255,255,.75); font-size: 14px;">+$7,500 and 5 days</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="trust-bar">
+        <div class="wrap trust-row">
+          <span>Trusted by operators</span>
+          <span>SOC2-ready workflows</span>
+          <span>Escrow-friendly rails</span>
+          <span>Business verification</span>
+          <span>Dispute prevention</span>
+        </div>
+      </section>
+
+      <section id="product" class="section">
+        <div class="wrap">
+          <div class="eyebrow">Product</div>
+          <h2>A safer operating layer for commercial work.</h2>
+          <div class="cards">
+            <article class="feature">
+              <div class="icon">A</div>
+              <h3>Agreement control</h3>
+              <p>Centralize contracts, documents, acceptance criteria, and approval history.</p>
+            </article>
+            <article class="feature">
+              <div class="icon">M</div>
+              <h3>Milestone assurance</h3>
+              <p>Track work evidence, approval states, release rules, and payment readiness.</p>
+            </article>
+            <article class="feature">
+              <div class="icon">C</div>
+              <h3>Scope change clarity</h3>
+              <p>Keep cost, timeline, and obligation changes auditable before they become disputes.</p>
+            </article>
+            <article class="feature">
+              <div class="icon">T</div>
+              <h3>Trust scoring</h3>
+              <p>Turn business behavior into confidence signals for clients and contractors.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section dark-band">
+        <div class="wrap">
+          <div class="eyebrow">How it works</div>
+          <h2>Create a protected workflow around every agreement.</h2>
+          <div class="steps">
+            <article class="step">
+              <strong>01</strong>
+              <h3>Create a protected project</h3>
+              <p>Invite counterparties, define scope, and attach the documents that govern the work.</p>
+            </article>
+            <article class="step">
+              <strong>02</strong>
+              <h3>Manage milestones and changes</h3>
+              <p>Track evidence, approval states, timeline shifts, cost impacts, and messages.</p>
+            </article>
+            <article class="step">
+              <strong>03</strong>
+              <h3>Approve with confidence</h3>
+              <p>Release approvals only when commercial terms, acceptance criteria, and trust signals align.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="solutions" class="section">
+        <div class="wrap">
+          <div class="eyebrow">Role-based dashboards</div>
+          <h2>Separate workflows for clients, contractors, and administrators.</h2>
+          <div class="role-grid">
+            <article class="role-card">
+              <h3>Client dashboard</h3>
+              <ul>
+                <li>Create project</li>
+                <li>Invite contractor</li>
+                <li>Add milestones</li>
+                <li>Request change</li>
+                <li>Approve or reject milestone</li>
+                <li>View messages and trust score</li>
+              </ul>
+            </article>
+            <article class="role-card">
+              <h3>Contractor dashboard</h3>
+              <ul>
+                <li>Accept project</li>
+                <li>Submit milestone work</li>
+                <li>Request timeline extension</li>
+                <li>Respond to change request</li>
+                <li>Message client</li>
+              </ul>
+            </article>
+            <article class="role-card">
+              <h3>Admin dashboard</h3>
+              <ul>
+                <li>View users</li>
+                <li>View projects</li>
+                <li>Review disputes</li>
+                <li>Freeze project</li>
+                <li>Verify businesses</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing" class="section">
+        <div class="wrap">
+          <div class="eyebrow">Pricing</div>
+          <h2>Plans for every agreement volume.</h2>
+          <div class="price-grid">
+            <article class="price">
+              <div class="eyebrow">Starter</div>
+              <strong>$49</strong>
+              <p>For small teams protecting project-based work.</p>
+              <ul>
+                <li>5 active projects</li>
+                <li>Milestone approvals</li>
+                <li>Basic trust score</li>
+              </ul>
+            </article>
+            <article class="price featured">
+              <div class="eyebrow" style="color: var(--emerald);">Growth</div>
+              <strong>$149</strong>
+              <p>For companies managing recurring clients and contractors.</p>
+              <ul>
+                <li>Unlimited projects</li>
+                <li>Change request workflows</li>
+                <li>Priority assurance checks</li>
+              </ul>
+            </article>
+            <article class="price">
+              <div class="eyebrow">Enterprise</div>
+              <strong>Custom</strong>
+              <p>For complex approval, compliance, and dispute workflows.</p>
+              <ul>
+                <li>Admin controls</li>
+                <li>Business verification</li>
+                <li>Custom policy reviews</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer id="company" class="footer">
+      <div class="wrap">
+        <span>Pactora</span>
+        <span style="color: var(--purple);">Open dashboard →</span>
+      </div>
+    </footer>
+  </body>
+</html>

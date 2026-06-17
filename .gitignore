@@ -1,0 +1,8 @@
+.next
+node_modules
+out
+dist
+.env*.local
+*.log
+.npm-cache
+.DS_Store
