@@ -19,22 +19,28 @@ function formatMoney(value: number) {
 const statusLabels: Record<Status, string> = {
   active: "In progress",
   pending: "Pending",
+  submitted: "Submitted",
   approved: "Approved",
+  revision_requested: "Revision requested",
   rejected: "Rejected",
   in_review: "In review",
   paid: "Paid",
   disputed: "Disputed",
+  resolved: "Resolved",
   frozen: "Paused"
 };
 
 const statusColors: Record<Status, string> = {
   active: "bg-purple",
   pending: "bg-slate-300",
+  submitted: "bg-purple",
   approved: "bg-emerald",
+  revision_requested: "bg-amber-400",
   rejected: "bg-rose-400",
   in_review: "bg-amber-400",
   paid: "bg-navy",
   disputed: "bg-rose-600",
+  resolved: "bg-emerald",
   frozen: "bg-slate-500"
 };
 
@@ -54,7 +60,7 @@ export function MilestoneOverview({
     : milestones.filter((milestone) => milestone.projectId === selectedProjectId);
   const totalValue = selectedMilestones.reduce((total, milestone) => total + amountValue(milestone.amount), 0);
   const approvedCount = selectedMilestones.filter((milestone) => milestone.status === "approved" || milestone.status === "paid").length;
-  const pendingCount = selectedMilestones.filter((milestone) => milestone.status === "pending" || milestone.status === "in_review").length;
+  const pendingCount = selectedMilestones.filter((milestone) => milestone.status === "pending" || milestone.status === "in_review" || milestone.status === "submitted").length;
   const completion = selectedMilestones.length ? Math.round((approvedCount / selectedMilestones.length) * 100) : 0;
   const visibleStatuses = Array.from(new Set(selectedMilestones.map((milestone) => milestone.status)));
 

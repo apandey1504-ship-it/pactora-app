@@ -8,6 +8,7 @@ import { DashboardShell } from "@/components/DashboardShell";
 import { EmptyState, ErrorState, LoadingState } from "@/components/ResourceState";
 import { useAuth } from "@/hooks/use-auth";
 import { useChangeRequests } from "@/hooks/use-change-requests";
+import { useMilestones } from "@/hooks/use-milestones";
 import { useProjects } from "@/hooks/use-projects";
 import { approveChangeRequest, contractorRespondToChangeRequest, createChangeRequest, rejectChangeRequest } from "@/services/pactoraService";
 
@@ -15,6 +16,7 @@ export default function ChangeRequestsPage() {
   const { profile } = useAuth();
   const { data: changeRequests, source, loading, error, refetch } = useChangeRequests();
   const { data: projects } = useProjects();
+  const { data: milestones } = useMilestones();
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -28,6 +30,7 @@ export default function ChangeRequestsPage() {
     try {
       await createChangeRequest({
         project_id: String(form.get("projectId") ?? ""),
+        milestone_id: String(form.get("milestoneId") ?? "") || null,
         requested_by: profile?.id ?? "",
         title: String(form.get("title") ?? ""),
         description: String(form.get("description") ?? ""),
@@ -62,10 +65,14 @@ export default function ChangeRequestsPage() {
     >
       {showForm ? (
         <form onSubmit={handleCreateChangeRequest} className="mb-6 rounded-lg border border-slate-200 bg-white p-5 shadow-soft">
-          <div className="grid gap-4 md:grid-cols-5">
+          <div className="grid gap-4 md:grid-cols-6">
             <select name="projectId" required className="rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none focus:border-purple">
               <option value="">Project</option>
               {projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}
+            </select>
+            <select name="milestoneId" className="rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none focus:border-purple">
+              <option value="">Milestone optional</option>
+              {milestones.map((milestone) => <option key={milestone.id} value={milestone.id}>{milestone.title}</option>)}
             </select>
             <input name="title" required placeholder="Request title" className="rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none focus:border-purple" />
             <input name="impactCost" type="number" min="0" placeholder="Impact cost" className="rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none focus:border-purple" />

@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { CheckCircle2, Clock3, Plus, Send } from "lucide-react";
+import { FormEvent, useEffect, useState } from "react";
+import { AlertTriangle, CheckCircle2, Clock3, Plus } from "lucide-react";
 import { ChangeRequestCard } from "@/components/ChangeRequestCard";
 import { DataSourceBadge } from "@/components/DataSourceBadge";
 import { DashboardShell } from "@/components/DashboardShell";
@@ -19,30 +19,53 @@ import {
   approveChangeRequest,
   approveMilestone,
   createChangeRequest,
+  createDispute,
   createMilestone,
+  getDisputesByProject,
   rejectChangeRequest,
   requestRevision,
-  submitMilestone
+  submitMilestone,
+  type Dispute
 } from "@/services/pactoraService";
+import { normalizeStatus } from "@/lib/format";
 
 export default function ProjectDetailsPage({ params }: { params: { id: string } }) {
-  const { data: project, source, loading } = useProject(params.id);
+  const { data: project, source, loading, refetch: refetchProject } = useProject(params.id);
   const { data: milestones, refetch: refetchMilestones } = useMilestones(params.id);
   const { data: changeRequests, refetch: refetchChanges } = useChangeRequests(params.id);
   const { data: documents, refetch: refetchDocuments } = useDocuments(params.id);
   const { profile } = useAuth();
   const [showMilestoneForm, setShowMilestoneForm] = useState(false);
+  const [showDisputeForm, setShowDisputeForm] = useState(false);
   const [projectError, setProjectError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [disputes, setDisputes] = useState<Dispute[]>([]);
+
+  async function loadDisputes() {
+    try {
+      const result = await getDisputesByProject(params.id);
+      setDisputes(result.data);
+    } catch (error) {
+      setProjectError(error instanceof Error ? error.message : "Disputes could not be loaded.");
+    }
+  }
+
+  useEffect(() => {
+    void loadDisputes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.id]);
 
   async function updateMilestone(action: (id: string) => Promise<unknown>, id: string) {
     await action(id);
     await refetchMilestones();
+    await refetchProject();
   }
 
   async function updateChange(action: (id: string) => Promise<unknown>, id: string) {
     await action(id);
     await refetchChanges();
+    await refetchMilestones();
+    await refetchProject();
   }
 
   async function handleAcceptProject() {
@@ -110,6 +133,32 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
     }
   }
 
+  async function handleRaiseDispute(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
+    setSaving(true);
+    setProjectError(null);
+
+    try {
+      await createDispute({
+        project_id: params.id,
+        milestone_id: String(form.get("milestoneId") ?? "") || null,
+        raised_by: profile?.id ?? "",
+        reason: String(form.get("reason") ?? ""),
+        description: String(form.get("description") ?? ""),
+        status: "open"
+      });
+      formElement.reset();
+      setShowDisputeForm(false);
+      await Promise.all([loadDisputes(), refetchProject(), refetchMilestones()]);
+    } catch (error) {
+      setProjectError(error instanceof Error ? error.message : "Dispute could not be raised.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   if (!project) {
     return (
       <DashboardShell title="Project not found" subtitle="This project could not be loaded.">
@@ -145,6 +194,9 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
             <button onClick={handleTimelineExtension} disabled={saving} className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-black text-navy ring-1 ring-slate-200 disabled:opacity-50">
               <Clock3 size={17} /> Request extension
             </button>
+            <button onClick={() => setShowDisputeForm((value) => !value)} className="inline-flex items-center gap-2 rounded-lg bg-rose-50 px-4 py-3 text-sm font-black text-rose-700 ring-1 ring-rose-100">
+              <AlertTriangle size={17} /> Raise dispute
+            </button>
           </div>
         </div>
         {showMilestoneForm ? (
@@ -154,6 +206,19 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
             <input name="dueDate" type="date" className="rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none focus:border-purple" />
             <button disabled={saving} className="rounded-lg bg-purple px-4 py-3 text-sm font-black text-white disabled:opacity-50">{saving ? "Saving" : "Save"}</button>
             <textarea name="description" placeholder="Milestone evidence or acceptance criteria" className="lg:col-span-4 rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none focus:border-purple" />
+          </form>
+        ) : null}
+        {showDisputeForm ? (
+          <form onSubmit={handleRaiseDispute} className="mt-5 grid gap-4 lg:grid-cols-[220px_1fr_150px]">
+            <select name="milestoneId" className="rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none focus:border-purple">
+              <option value="">Whole project</option>
+              {milestones.map((milestone) => (
+                <option key={milestone.id} value={milestone.id}>{milestone.title}</option>
+              ))}
+            </select>
+            <input name="reason" required placeholder="Dispute reason" className="rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none focus:border-purple" />
+            <button disabled={saving} className="rounded-lg bg-rose-600 px-4 py-3 text-sm font-black text-white disabled:opacity-50">{saving ? "Saving" : "Submit"}</button>
+            <textarea name="description" placeholder="Describe the issue, evidence, and desired resolution" className="lg:col-span-3 rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none focus:border-purple" />
           </form>
         ) : null}
       </section>
@@ -181,6 +246,28 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
       </section>
       <section className="mt-8">
         <DocumentUploadPanel projectId={params.id} uploadedBy={profile?.id} documents={documents} onUploaded={refetchDocuments} />
+      </section>
+      <section className="mt-8">
+        <h2 className="mb-4 text-xl font-black text-navy">Disputes</h2>
+        {disputes.length === 0 ? (
+          <div className="rounded-lg border border-slate-200 bg-white p-5 text-sm font-bold text-slate-500 shadow-soft">No disputes raised for this project.</div>
+        ) : (
+          <div className="grid gap-4 lg:grid-cols-2">
+            {disputes.map((dispute) => (
+              <article key={dispute.id} className="rounded-lg border border-slate-200 bg-white p-5 shadow-soft">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-wide text-rose-600">{dispute.milestone_id ? "Milestone dispute" : "Project dispute"}</p>
+                    <h3 className="mt-2 text-lg font-black text-navy">{dispute.reason}</h3>
+                  </div>
+                  <StatusBadge status={normalizeStatus(dispute.status)} />
+                </div>
+                <p className="mt-3 text-sm font-medium leading-6 text-slate-600">{dispute.description ?? "No description provided."}</p>
+                {dispute.resolution ? <p className="mt-3 rounded-lg bg-cloud p-3 text-sm font-bold text-navy">{dispute.resolution}</p> : null}
+              </article>
+            ))}
+          </div>
+        )}
       </section>
       <section className="mt-8 grid gap-5 lg:grid-cols-3">
         {changeRequests.map((request) => (

@@ -9,6 +9,7 @@ import { EmptyState, ErrorState, LoadingState } from "@/components/ResourceState
 import { StatusBadge } from "@/components/StatusBadge";
 import { useAllDisputes, useAllUsers } from "@/hooks/use-admin";
 import { useProjects } from "@/hooks/use-projects";
+import { normalizeStatus } from "@/lib/format";
 import { getAuditLogs, updateDisputeStatus, updateProjectStatus, type AuditLogRow } from "@/services/pactoraService";
 
 export default function AdminDashboardPage() {
@@ -121,7 +122,10 @@ export default function AdminDashboardPage() {
             {disputes.map((dispute) => (
               <div key={dispute.id} className="rounded-lg bg-cloud p-4">
                 <p className="font-black text-navy">{dispute.reason}</p>
-                <p className="text-sm font-semibold text-slate-500">{dispute.status} · {new Date(dispute.created_at).toLocaleDateString()}</p>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <StatusBadge status={normalizeStatus(dispute.status)} />
+                  <p className="text-sm font-semibold text-slate-500">{new Date(dispute.created_at).toLocaleDateString()}</p>
+                </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <button onClick={() => handleDisputeStatus(dispute.id, "under_review")} className="rounded-lg bg-purple px-3 py-2 text-xs font-black text-white">Review</button>
                   <button onClick={() => handleDisputeStatus(dispute.id, "resolved")} className="rounded-lg bg-emerald px-3 py-2 text-xs font-black text-white">Resolve</button>

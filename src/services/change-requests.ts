@@ -11,9 +11,13 @@ type ChangeRequestStatus = NonNullable<Database["public"]["Tables"]["change_requ
 function mapChangeRequest(row: ChangeRequestRow): ChangeRequest {
   return {
     id: row.id,
+    projectId: row.project_id,
+    milestoneId: row.milestone_id,
     title: row.title,
     requester: row.requested_by ? `User ${row.requested_by.slice(0, 8)}` : "Project stakeholder",
     impact: `${formatImpactCost(row.impact_cost)} and ${row.impact_days} day${row.impact_days === 1 ? "" : "s"}`,
+    impactCost: row.impact_cost,
+    impactDays: row.impact_days,
     status: normalizeStatus(row.status),
     summary: row.description ?? "No summary provided."
   };

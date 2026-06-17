@@ -86,25 +86,37 @@ export const milestones: Milestone[] = [
 export const changeRequests: ChangeRequest[] = [
   {
     id: "cr-104",
+    projectId: "aurora-platform",
+    milestoneId: "m2",
     title: "Add vendor audit export",
     requester: "Northstar Foods",
     impact: "+$7,500 and 5 business days",
+    impactCost: 7500,
+    impactDays: 5,
     status: "pending",
     summary: "Client requested an export workflow for quarterly vendor audits."
   },
   {
     id: "cr-099",
+    projectId: "aurora-platform",
+    milestoneId: null,
     title: "Move SSO to phase two",
     requester: "Bluepeak Studio",
     impact: "No cost change, timeline risk reduced",
+    impactCost: 0,
+    impactDays: 0,
     status: "approved",
     summary: "Contractor proposed moving SSO until after the pilot launch."
   },
   {
     id: "cr-083",
+    projectId: "ledger-migration",
+    milestoneId: null,
     title: "Mobile breakpoint polish",
     requester: "Northstar Foods",
     impact: "+$2,100",
+    impactCost: 2100,
+    impactDays: 0,
     status: "rejected",
     summary: "Request was rejected because the existing scope already covers responsive QA."
   }

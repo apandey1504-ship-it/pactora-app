@@ -27,6 +27,7 @@ export type DocumentRow = Database["public"]["Tables"]["documents"]["Row"];
 export type DocumentInsert = Database["public"]["Tables"]["documents"]["Insert"];
 export type Payment = Database["public"]["Tables"]["payments"]["Row"];
 export type Dispute = Database["public"]["Tables"]["disputes"]["Row"];
+export type DisputeInsert = Database["public"]["Tables"]["disputes"]["Insert"];
 export type TrustScoreRow = Database["public"]["Tables"]["trust_scores"]["Row"];
 export type AuditLogRow = Database["public"]["Tables"]["audit_logs"]["Row"];
 export type AuditLogInsert = Database["public"]["Tables"]["audit_logs"]["Insert"];
@@ -72,9 +73,13 @@ function mapChangeRequest(row: ChangeRequestRow): ChangeRequest {
 
   return {
     id: row.id,
+    projectId: row.project_id,
+    milestoneId: row.milestone_id,
     title: row.title,
     requester: `User ${row.requested_by.slice(0, 8)}`,
     impact: `${cost} and ${row.impact_days} day${row.impact_days === 1 ? "" : "s"}`,
+    impactCost: row.impact_cost,
+    impactDays: row.impact_days,
     status: normalizeStatus(row.status),
     summary: row.description ?? "No summary provided."
   };
@@ -485,15 +490,84 @@ export async function contractorRespondToChangeRequest(id: string, approved: boo
 }
 
 export async function approveChangeRequest(id: string) {
-  return updateChangeRequest(id, {
-    approved_by_client: true,
-    status: "approved",
-    approved_at: new Date().toISOString()
+  const client = requireSupabase();
+
+  if (!client) {
+    return { data: null, source: "mock" as const };
+  }
+
+  const { data: request, error: requestError } = await client
+    .from("change_requests")
+    .select("*")
+    .eq("id", id)
+    .single();
+  throwIfError(requestError);
+  const changeRequest = ensureData(request);
+
+  const { data: approvedRequest, error: approvalError } = await client
+    .from("change_requests")
+    .update({
+      approved_by_client: true,
+      status: "approved",
+      approved_at: new Date().toISOString()
+    })
+    .eq("id", id)
+    .select("*")
+    .single();
+  throwIfError(approvalError);
+
+  if (changeRequest.impact_cost !== 0) {
+    const { data: project, error: projectReadError } = await client
+      .from("projects")
+      .select("project_value")
+      .eq("id", changeRequest.project_id)
+      .single();
+    throwIfError(projectReadError);
+
+    const { error: projectUpdateError } = await client
+      .from("projects")
+      .update({ project_value: (project?.project_value ?? 0) + changeRequest.impact_cost })
+      .eq("id", changeRequest.project_id);
+    throwIfError(projectUpdateError);
+  }
+
+  if (changeRequest.milestone_id && changeRequest.impact_days !== 0) {
+    const { data: milestone, error: milestoneReadError } = await client
+      .from("milestones")
+      .select("due_date")
+      .eq("id", changeRequest.milestone_id)
+      .single();
+    throwIfError(milestoneReadError);
+
+    if (milestone?.due_date) {
+      const dueDate = new Date(milestone.due_date);
+      dueDate.setDate(dueDate.getDate() + changeRequest.impact_days);
+      const { error: milestoneUpdateError } = await client
+        .from("milestones")
+        .update({ due_date: dueDate.toISOString().slice(0, 10) })
+        .eq("id", changeRequest.milestone_id);
+      throwIfError(milestoneUpdateError);
+    }
+  }
+
+  await writeAuditLog({
+    user_id: await getAuthenticatedUserId(),
+    project_id: changeRequest.project_id,
+    action: "change_request.approved",
+    metadata: {
+      change_request_id: id,
+      milestone_id: changeRequest.milestone_id,
+      project_value_delta: changeRequest.impact_cost,
+      milestone_due_date_delta_days: changeRequest.impact_days
+    }
   });
+
+  return { data: mapChangeRequest(ensureData(approvedRequest)), source: "supabase" as const };
 }
 
 export async function rejectChangeRequest(id: string) {
-  return updateChangeRequest(id, { status: "rejected" });
+  const result = await updateChangeRequest(id, { status: "rejected" });
+  return result;
 }
 
 async function updateChangeRequest(id: string, patch: Database["public"]["Tables"]["change_requests"]["Update"]) {
@@ -783,20 +857,87 @@ export async function updateDisputeStatus(id: string, status: DisputeStatus): Pr
     return { data: null, source: "mock" };
   }
 
-  const { data, error } = await client.from("disputes").update({ status }).eq("id", id).select("*").single();
+  const patch: Database["public"]["Tables"]["disputes"]["Update"] = { status };
+  const userId = await getAuthenticatedUserId();
+
+  if (status === "resolved" || status === "rejected") {
+    patch.resolved_by = userId;
+    patch.resolved_at = new Date().toISOString();
+    patch.resolution = status === "resolved" ? "Resolved by admin review." : "Rejected by admin review.";
+  }
+
+  const { data, error } = await client.from("disputes").update(patch).eq("id", id).select("*").single();
   throwIfError(error);
   const dispute = ensureData(data);
   await writeAuditLog({
-    user_id: await getAuthenticatedUserId(),
+    user_id: userId,
     project_id: dispute.project_id,
-    action: "dispute.status_updated",
+    action: status === "resolved" ? "dispute.resolved" : "dispute.status_updated",
     metadata: {
       dispute_id: id,
-      status
+      status,
+      milestone_id: dispute.milestone_id,
+      resolution: patch.resolution
     }
   });
 
   return { data: dispute, source: "supabase" };
+}
+
+export async function createDispute(input: DisputeInsert): Promise<ServiceResult<Dispute | null>> {
+  const client = requireSupabase();
+
+  if (!client) {
+    return { data: null, source: "mock" };
+  }
+
+  const { data, error } = await client.from("disputes").insert([input]).select("*").single();
+  throwIfError(error);
+  const dispute = ensureData(data);
+
+  if (input.milestone_id) {
+    const { error: milestoneError } = await client
+      .from("milestones")
+      .update({ status: "disputed" })
+      .eq("id", input.milestone_id);
+    throwIfError(milestoneError);
+  }
+
+  const { error: projectError } = await client
+    .from("projects")
+    .update({ status: "disputed" })
+    .eq("id", input.project_id);
+  throwIfError(projectError);
+
+  await writeAuditLog({
+    user_id: input.raised_by,
+    project_id: input.project_id,
+    action: "dispute.raised",
+    metadata: {
+      dispute_id: dispute.id,
+      milestone_id: input.milestone_id,
+      reason: input.reason
+    }
+  });
+
+  return { data: dispute, source: "supabase" };
+}
+
+export async function getDisputesByProject(projectId: string): Promise<ServiceResult<Dispute[]>> {
+  const client = requireSupabase();
+
+  if (!client) {
+    return { data: [], source: "mock" };
+  }
+
+  const { data, error } = await client
+    .from("disputes")
+    .select("*")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: false });
+  throwIfError(error);
+
+  return { data: data ?? [], source: "supabase" };
 }
 
 export async function getAuditLogs(limit = 25): Promise<ServiceResult<AuditLogRow[]>> {

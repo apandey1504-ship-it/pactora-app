@@ -3,11 +3,14 @@ export type UserRole = "client" | "contractor" | "admin" | "arbitrator";
 export type Status =
   | "active"
   | "pending"
+  | "submitted"
   | "approved"
+  | "revision_requested"
   | "rejected"
   | "in_review"
   | "paid"
   | "disputed"
+  | "resolved"
   | "frozen";
 
 export type Project = {
@@ -34,9 +37,13 @@ export type Milestone = {
 
 export type ChangeRequest = {
   id: string;
+  projectId: string;
+  milestoneId?: string | null;
   title: string;
   requester: string;
   impact: string;
+  impactCost: number;
+  impactDays: number;
   status: Status;
   summary: string;
 };

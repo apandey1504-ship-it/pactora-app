@@ -44,9 +44,9 @@ export function normalizeStatus(status: string | null | undefined): Status {
     pending: "pending",
     funded: "paid",
     in_progress: "active",
-    submitted: "in_review",
+    submitted: "submitted",
     approved: "approved",
-    revision_requested: "in_review",
+    revision_requested: "revision_requested",
     paid: "paid",
     requested: "pending",
     contractor_review: "in_review",
@@ -57,7 +57,7 @@ export function normalizeStatus(status: string | null | undefined): Status {
     failed: "rejected",
     open: "disputed",
     under_review: "in_review",
-    resolved: "approved"
+    resolved: "resolved"
   };
 
   if (statusMap[normalized]) {
@@ -67,11 +67,14 @@ export function normalizeStatus(status: string | null | undefined): Status {
   const validStatuses: Status[] = [
     "active",
     "pending",
+    "submitted",
     "approved",
+    "revision_requested",
     "rejected",
     "in_review",
     "paid",
     "disputed",
+    "resolved",
     "frozen"
   ];
 
