@@ -1,7 +1,7 @@
 "use client";
 
-import { getAllDisputes, getAllUsers } from "@/services/pactoraService";
-import type { Dispute, Profile } from "@/services/pactoraService";
+import { getAllCompanies, getAllDisputes, getAllUsers } from "@/services/pactoraService";
+import type { Company, Dispute, Profile } from "@/services/pactoraService";
 import { useService } from "./use-service";
 
 export function useAllUsers() {
@@ -10,4 +10,8 @@ export function useAllUsers() {
 
 export function useAllDisputes() {
   return useService<Dispute[]>(() => getAllDisputes(), [], []);
+}
+
+export function useAllCompanies() {
+  return useService<Company[]>(() => getAllCompanies(), [], []);
 }

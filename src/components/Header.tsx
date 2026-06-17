@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BetaBanner } from "./BetaBanner";
 import { Logo } from "./Logo";
 
 const navItems = ["Product", "Solutions", "Pricing", "Resources", "Company"];
@@ -6,16 +7,23 @@ const navItems = ["Product", "Solutions", "Pricing", "Resources", "Company"];
 export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/70 bg-white/80 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
-        <Logo />
+      <BetaBanner />
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
+        <div className="min-w-0">
+          <Logo />
+        </div>
         <nav className="hidden items-center gap-7 text-sm font-semibold text-slate-600 lg:flex">
-          {navItems.map((item) => (
-            <a key={item} href={`#${item.toLowerCase()}`} className="transition hover:text-navy">
-              {item}
-            </a>
-          ))}
+          {navItems.map((item) => {
+            const href = item === "Pricing" ? "/pricing" : `/#${item.toLowerCase()}`;
+
+            return (
+              <Link key={item} href={href} className="transition hover:text-navy">
+                {item}
+              </Link>
+            );
+          })}
         </nav>
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-3">
           <Link href="/login" className="hidden text-sm font-bold text-navy sm:inline">
             Login
           </Link>

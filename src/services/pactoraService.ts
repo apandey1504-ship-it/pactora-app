@@ -1,14 +1,6 @@
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { formatCurrency, formatDate, formatTime, normalizeStatus } from "@/lib/format";
-import {
-  changeRequests as mockChangeRequests,
-  documents as mockDocuments,
-  messages as mockMessages,
-  milestones as mockMilestones,
-  mockUser,
-  projects as mockProjects,
-  trustScores as mockTrustScores
-} from "@/lib/mock-data";
+import { mockUser } from "@/lib/mock-data";
 import { supabase } from "@/lib/supabase";
 import type { ChangeRequest, Message, Milestone, Project, ProjectDocument, ServiceResult, TrustScore } from "@/types";
 import type { Database, DisputeStatus, MilestoneStatus, ProjectStatus } from "@/types/database";
@@ -155,36 +147,117 @@ async function writeAuditLog(input: AuditLogInsert) {
     return;
   }
 
-  const { error } = await client.from("audit_logs").insert([
+  await client.from("audit_logs").insert([
     {
       ...input,
       metadata: input.metadata ?? {}
     }
   ]);
+}
 
-  if (error) {
-    console.warn("Pactora audit log skipped:", error.message);
+async function getProjectNotificationRecipients(projectId: string, excludeUserId?: string) {
+  const client = requireSupabase();
+
+  if (!client) {
+    return [];
   }
+
+  const { data: participants } = await client
+    .from("project_participants")
+    .select("user_id")
+    .eq("project_id", projectId);
+  const userIds = (participants ?? [])
+    .map((participant) => participant.user_id)
+    .filter((userId) => userId && userId !== excludeUserId);
+
+  if (!userIds.length) {
+    return [];
+  }
+
+  const { data: profiles } = await client
+    .from("profiles")
+    .select("id, email, full_name")
+    .in("id", userIds);
+
+  return (profiles ?? []).filter((profile) => Boolean(profile.email));
+}
+
+async function getAdminNotificationRecipients() {
+  const client = requireSupabase();
+
+  if (!client) {
+    return [];
+  }
+
+  const { data } = await client
+    .from("profiles")
+    .select("id, email, full_name")
+    .eq("role", "admin");
+
+  return (data ?? []).filter((profile) => Boolean(profile.email));
+}
+
+async function notifyUsers(input: {
+  userIds?: string[];
+  projectId?: string | null;
+  title: string;
+  body: string;
+}) {
+  const client = requireSupabase();
+
+  if (!client || !input.userIds?.length) {
+    return;
+  }
+
+  await client.from("notifications").insert(
+    input.userIds.map((userId) => ({
+      user_id: userId,
+      title: input.title,
+      body: input.body
+    }))
+  );
+}
+
+async function sendWorkflowEmail(input: {
+  to?: string[];
+  subject: string;
+  title: string;
+  body: string;
+  cta?: string;
+}) {
+  const recipients = (input.to ?? []).filter(Boolean);
+
+  if (!recipients.length || typeof window === "undefined") {
+    return;
+  }
+
+  await fetch("/api/notifications/email", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      to: recipients,
+      subject: input.subject,
+      html: `
+        <div style="font-family:Inter,Arial,sans-serif;line-height:1.6;color:#081A33">
+          <p style="font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#635BFF">Pactora private beta</p>
+          <h1 style="font-size:24px;margin:0 0 12px">${input.title}</h1>
+          <p>${input.body}</p>
+          ${input.cta ? `<p><a href="${input.cta}" style="display:inline-block;background:#635BFF;color:white;padding:12px 16px;border-radius:8px;text-decoration:none;font-weight:800">Open Pactora</a></p>` : ""}
+        </div>
+      `
+    })
+  }).catch(() => undefined);
+}
+
+function getAppOrigin() {
+  return typeof window === "undefined" ? "" : window.location.origin;
 }
 
 export async function getCurrentProfile(): Promise<ServiceResult<Profile | null>> {
   const client = requireSupabase();
 
   if (!client) {
-    return {
-      data: {
-        id: mockUser.id,
-        full_name: mockUser.fullName,
-        email: mockUser.email,
-        phone: null,
-        role: mockUser.role,
-        avatar_url: null,
-        kyc_status: "mock",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      },
-      source: "mock"
-    };
+    return { data: null, source: "mock" };
   }
 
   const { data: authData, error: authError } = await client.auth.getUser();
@@ -261,15 +334,58 @@ export async function createProject(input: {
       due_date: payload.due_date
     }
   });
+  await sendWorkflowEmail({
+    to: (await getProjectNotificationRecipients(projectId, createdBy)).map((profile) => profile.email),
+    subject: `Pactora project created: ${input.title}`,
+    title: "New protected project created",
+    body: `${input.title} is now tracked in Pactora with audit logs, milestones, documents, and approvals.`,
+    cta: `${getAppOrigin()}/projects/${projectId}`
+  });
 
   return { data: mapProject(payload as ProjectRow), source: "supabase" };
+}
+
+export async function sendProjectInvite(input: {
+  projectId: string;
+  contractorEmail: string;
+  invitedBy: string;
+}): Promise<ServiceResult<boolean>> {
+  const client = requireSupabase();
+
+  if (!client) {
+    return { data: false, source: "mock" };
+  }
+
+  const { data: project, error } = await client
+    .from("projects")
+    .select("title")
+    .eq("id", input.projectId)
+    .maybeSingle();
+  throwIfError(error);
+
+  await writeAuditLog({
+    user_id: input.invitedBy,
+    project_id: input.projectId,
+    action: "project.invite_sent",
+    metadata: { contractor_email: input.contractorEmail }
+  });
+
+  await sendWorkflowEmail({
+    to: [input.contractorEmail],
+    subject: `You were invited to Pactora: ${project?.title ?? "Protected project"}`,
+    title: "Project invite",
+    body: "You have been invited to review and accept a protected agreement in Pactora.",
+    cta: `${getAppOrigin()}/projects/${input.projectId}`
+  });
+
+  return { data: true, source: "supabase" };
 }
 
 export async function getProjects(): Promise<ServiceResult<Project[]>> {
   const client = requireSupabase();
 
   if (!client) {
-    return { data: mockProjects, source: "mock" };
+    return { data: [], source: "mock" };
   }
 
   const { data, error } = await client.from("projects").select("*").order("created_at", { ascending: false });
@@ -286,7 +402,7 @@ export async function getProjectById(id: string): Promise<ServiceResult<Project 
   const client = requireSupabase();
 
   if (!client) {
-    return { data: mockProjects.find((project) => project.id === id) ?? null, source: "mock" };
+    return { data: null, source: "mock" };
   }
 
   const { data, error } = await client.from("projects").select("*").eq("id", id).maybeSingle();
@@ -389,7 +505,7 @@ export async function getMilestonesByProject(projectId?: string): Promise<Servic
   const client = requireSupabase();
 
   if (!client) {
-    return { data: mockMilestones, source: "mock" };
+    return { data: [], source: "mock" };
   }
 
   let query = client.from("milestones").select("*").order("due_date", { ascending: true });
@@ -426,6 +542,37 @@ async function updateMilestoneStatus(id: string, status: MilestoneStatus) {
       status
     }
   });
+  const recipients = await getProjectNotificationRecipients(milestone.project_id);
+  const emailMap: Partial<Record<MilestoneStatus, { subject: string; title: string; body: string }>> = {
+    submitted: {
+      subject: `Milestone submitted: ${milestone.title}`,
+      title: "Milestone submitted",
+      body: `${milestone.title} has been submitted for client approval.`
+    },
+    approved: {
+      subject: `Milestone approved: ${milestone.title}`,
+      title: "Milestone approved",
+      body: `${milestone.title} has been approved in Pactora.`
+    },
+    revision_requested: {
+      subject: `Revision requested: ${milestone.title}`,
+      title: "Milestone revision requested",
+      body: `${milestone.title} needs revision before approval.`
+    },
+    disputed: {
+      subject: `Milestone disputed: ${milestone.title}`,
+      title: "Milestone disputed",
+      body: `${milestone.title} has been marked disputed.`
+    }
+  };
+  const email = emailMap[status];
+  if (email) {
+    await sendWorkflowEmail({
+      to: recipients.map((profile) => profile.email),
+      ...email,
+      cta: `${getAppOrigin()}/projects/${milestone.project_id}`
+    });
+  }
 
   return { data: mapMilestone(milestone), source: "supabase" as const };
 }
@@ -463,6 +610,19 @@ export async function createChangeRequest(input: ChangeRequestInsert): Promise<S
       status: input.status
     }
   });
+  const recipients = await getProjectNotificationRecipients(input.project_id, input.requested_by);
+  await notifyUsers({
+    userIds: recipients.map((profile) => profile.id),
+    title: "Change request created",
+    body: input.title
+  });
+  await sendWorkflowEmail({
+    to: recipients.map((profile) => profile.email),
+    subject: `Change request created: ${input.title}`,
+    title: "Change request created",
+    body: `${input.title} was created with ${formatCurrency(input.impact_cost ?? 0)} cost impact and ${input.impact_days ?? 0} day impact.`,
+    cta: `${getAppOrigin()}/change-requests`
+  });
 
   return { data: mapChangeRequest(ensureData(data)), source: "supabase" };
 }
@@ -471,7 +631,7 @@ export async function getChangeRequestsByProject(projectId?: string): Promise<Se
   const client = requireSupabase();
 
   if (!client) {
-    return { data: mockChangeRequests, source: "mock" };
+    return { data: [], source: "mock" };
   }
 
   let query = client.from("change_requests").select("*").order("created_at", { ascending: false });
@@ -561,6 +721,14 @@ export async function approveChangeRequest(id: string) {
       milestone_due_date_delta_days: changeRequest.impact_days
     }
   });
+  const recipients = await getProjectNotificationRecipients(changeRequest.project_id);
+  await sendWorkflowEmail({
+    to: recipients.map((profile) => profile.email),
+    subject: `Change request approved: ${changeRequest.title}`,
+    title: "Change request approved",
+    body: `${changeRequest.title} was approved. Project value and linked milestone due date were updated where applicable.`,
+    cta: `${getAppOrigin()}/change-requests`
+  });
 
   return { data: mapChangeRequest(ensureData(approvedRequest)), source: "supabase" as const };
 }
@@ -589,6 +757,16 @@ async function updateChangeRequest(id: string, patch: Database["public"]["Tables
       patch
     }
   });
+  if (patch.status === "rejected") {
+    const recipients = await getProjectNotificationRecipients(changeRequest.project_id);
+    await sendWorkflowEmail({
+      to: recipients.map((profile) => profile.email),
+      subject: `Change request rejected: ${changeRequest.title}`,
+      title: "Change request rejected",
+      body: `${changeRequest.title} was rejected in Pactora.`,
+      cta: `${getAppOrigin()}/change-requests`
+    });
+  }
 
   return { data: mapChangeRequest(changeRequest), source: "supabase" as const };
 }
@@ -667,6 +845,19 @@ export async function sendMessage(input: MessageInsert): Promise<ServiceResult<M
       preview: input.message.slice(0, 120)
     }
   });
+  const recipients = await getProjectNotificationRecipients(input.project_id, input.sender_id);
+  await notifyUsers({
+    userIds: recipients.map((profile) => profile.id),
+    title: "New project message",
+    body: input.message.slice(0, 120)
+  });
+  await sendWorkflowEmail({
+    to: recipients.map((profile) => profile.email),
+    subject: "New Pactora project message",
+    title: "New message",
+    body: input.message.slice(0, 240),
+    cta: `${getAppOrigin()}/messages`
+  });
 
   return { data: mapMessage(ensureData(data)), source: "supabase" };
 }
@@ -675,7 +866,7 @@ export async function getMessagesByProject(projectId?: string): Promise<ServiceR
   const client = requireSupabase();
 
   if (!client) {
-    return { data: mockMessages, source: "mock" };
+    return { data: [], source: "mock" };
   }
 
   let query = client.from("messages").select("*").order("created_at", { ascending: true });
@@ -769,8 +960,7 @@ export async function getDocumentsByProject(projectId?: string): Promise<Service
   const client = requireSupabase();
 
   if (!client) {
-    const data = projectId ? mockDocuments.filter((document) => document.projectId === projectId) : mockDocuments;
-    return { data, source: "mock" };
+    return { data: [], source: "mock" };
   }
 
   let query = client.from("documents").select("*").order("created_at", { ascending: false });
@@ -787,7 +977,7 @@ export async function getCompanyTrustScore(companyId = mockUser.companyId): Prom
   const client = requireSupabase();
 
   if (!client) {
-    return { data: mockTrustScores.find((score) => score.companyId === companyId) ?? mockTrustScores[0] ?? null, source: "mock" };
+    return { data: null, source: "mock" };
   }
 
   const { data, error } = await client.from("trust_scores").select("*").eq("company_id", companyId).maybeSingle();
@@ -800,7 +990,7 @@ export async function calculateTrustScorePlaceholder(companyId = mockUser.compan
   const client = requireSupabase();
 
   if (!client) {
-    return { data: mockTrustScores[0]?.score ?? 70, source: "mock" as const };
+    return { data: null, source: "mock" as const };
   }
 
   const { data, error } = await client.rpc("calculate_basic_trust_score", { company_id: companyId });
@@ -813,28 +1003,57 @@ export async function getAllUsers(): Promise<ServiceResult<Profile[]>> {
   const client = requireSupabase();
 
   if (!client) {
-    return {
-      data: [
-        {
-          id: mockUser.id,
-          full_name: mockUser.fullName,
-          email: mockUser.email,
-          phone: null,
-          role: mockUser.role,
-          avatar_url: null,
-          kyc_status: "mock",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
-      ],
-      source: "mock"
-    };
+    return { data: [], source: "mock" };
   }
 
   const { data, error } = await client.from("profiles").select("*").order("created_at", { ascending: false });
   throwIfError(error);
 
   return { data: data ?? [], source: "supabase" };
+}
+
+export async function getAllCompanies(): Promise<ServiceResult<Company[]>> {
+  const client = requireSupabase();
+
+  if (!client) {
+    return { data: [], source: "mock" };
+  }
+
+  const { data, error } = await client.from("companies").select("*").order("created_at", { ascending: false });
+  throwIfError(error);
+
+  return { data: data ?? [], source: "supabase" };
+}
+
+export async function updateCompanyVerificationStatus(
+  id: string,
+  verificationStatus: "unverified" | "pending" | "verified" | "rejected"
+): Promise<ServiceResult<Company | null>> {
+  const client = requireSupabase();
+
+  if (!client) {
+    return { data: null, source: "mock" };
+  }
+
+  const { data, error } = await client
+    .from("companies")
+    .update({ verification_status: verificationStatus })
+    .eq("id", id)
+    .select("*")
+    .single();
+  throwIfError(error);
+  const company = ensureData(data);
+
+  await writeAuditLog({
+    user_id: await getAuthenticatedUserId(),
+    action: "company.verification_updated",
+    metadata: {
+      company_id: id,
+      verification_status: verificationStatus
+    }
+  });
+
+  return { data: company, source: "supabase" };
 }
 
 export async function getAllDisputes(): Promise<ServiceResult<Dispute[]>> {
@@ -880,6 +1099,14 @@ export async function updateDisputeStatus(id: string, status: DisputeStatus): Pr
       resolution: patch.resolution
     }
   });
+  const participants = await getProjectNotificationRecipients(dispute.project_id);
+  await sendWorkflowEmail({
+    to: participants.map((profile) => profile.email),
+    subject: `Dispute ${status}: ${dispute.reason}`,
+    title: status === "resolved" ? "Dispute resolved" : "Dispute updated",
+    body: `${dispute.reason} is now ${status}.`,
+    cta: `${getAppOrigin()}/projects/${dispute.project_id}`
+  });
 
   return { data: dispute, source: "supabase" };
 }
@@ -918,6 +1145,15 @@ export async function createDispute(input: DisputeInsert): Promise<ServiceResult
       milestone_id: input.milestone_id,
       reason: input.reason
     }
+  });
+  const admins = await getAdminNotificationRecipients();
+  const participants = await getProjectNotificationRecipients(input.project_id, input.raised_by);
+  await sendWorkflowEmail({
+    to: [...admins, ...participants].map((profile) => profile.email),
+    subject: `Dispute raised: ${input.reason}`,
+    title: "Dispute raised",
+    body: `${input.reason} was raised for a protected Pactora project.`,
+    cta: `${getAppOrigin()}/dashboard/admin`
   });
 
   return { data: dispute, source: "supabase" };

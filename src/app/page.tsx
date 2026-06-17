@@ -5,6 +5,7 @@ import { PricingCard } from "@/components/PricingCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { TrustScoreBadge } from "@/components/TrustScoreBadge";
 import { changeRequests, milestones, projects, trustSignals } from "@/lib/mock-data";
+import { pricingPlans } from "@/lib/pricing";
 
 const features = [
   { icon: WalletCards, title: "Cost protected", text: "Track project value, reserve assumptions, unpaid change exposure, and payment readiness." },
@@ -149,15 +150,20 @@ export default function LandingPage() {
           <p className="text-sm font-black uppercase tracking-wide text-purple">Pricing</p>
           <h2 className="mt-3 text-4xl font-black tracking-tight">Plans for every agreement volume.</h2>
         </div>
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
-          <PricingCard name="Starter" price="$49" description="For small teams protecting project-based work." features={["5 active projects", "Milestone approvals", "Basic trust score"]} />
-          <PricingCard name="Growth" price="$149" description="For companies managing recurring clients and contractors." features={["Unlimited projects", "Change request workflows", "Priority assurance checks"]} featured />
-          <PricingCard name="Enterprise" price="Custom" description="For complex approval, compliance, and dispute workflows." features={["Admin controls", "Business verification", "Custom policy reviews"]} />
+        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          {pricingPlans.map((plan) => (
+            <PricingCard key={plan.name} {...plan} featured={plan.name === "Business"} />
+          ))}
         </div>
       </section>
       <footer id="company" className="bg-white px-5 py-10 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
           <p className="text-xl font-black">Pactora</p>
+          <div className="flex flex-wrap gap-4 text-sm font-bold text-slate-500">
+            <Link href="/terms">Terms</Link>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/contact">Contact</Link>
+          </div>
           <Link href="/dashboard/client" className="inline-flex items-center gap-2 font-black text-purple">
             Open dashboard <ArrowRight size={18} />
           </Link>

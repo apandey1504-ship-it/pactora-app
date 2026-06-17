@@ -59,8 +59,6 @@ async function ensureDefaultWorkspace(profile: Profile) {
     if (isMissingWorkspaceTableError(membershipError)) {
       return;
     }
-
-    console.warn("Pactora workspace setup skipped:", membershipError.message);
     return;
   }
 
@@ -95,8 +93,6 @@ async function ensureDefaultWorkspace(profile: Profile) {
     if (isMissingWorkspaceTableError(companyError)) {
       return;
     }
-
-    console.warn("Pactora company setup skipped:", companyError.message);
     return;
   }
 
@@ -112,8 +108,7 @@ async function ensureDefaultWorkspace(profile: Profile) {
     if (isMissingWorkspaceTableError(memberError)) {
       return;
     }
-
-    console.warn("Pactora company membership setup skipped:", memberError.message);
+    return;
   }
 }
 
@@ -203,7 +198,7 @@ export async function getAuthProfile(): Promise<Profile | null> {
         email: user.email ?? "",
         full_name: user.user_metadata?.full_name ?? "",
         role,
-        kyc_status: "not_started"
+        kyc_status: "unverified"
       }
     ])
     .select("*")
@@ -247,7 +242,7 @@ export async function signUpWithProfile(input: SignupInput) {
       full_name: input.fullName,
       phone: input.phone ? `${input.countryCode ?? ""} ${input.phone}`.trim() : null,
       role: input.role,
-      kyc_status: "not_started"
+      kyc_status: "unverified"
     });
 
     if (profileError) {
@@ -265,7 +260,7 @@ export async function signUpWithProfile(input: SignupInput) {
       phone: input.phone ? `${input.countryCode ?? ""} ${input.phone}`.trim() : null,
       role: input.role,
       avatar_url: null,
-      kyc_status: "not_started",
+      kyc_status: "unverified",
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     });

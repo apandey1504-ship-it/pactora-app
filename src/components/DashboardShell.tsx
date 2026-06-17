@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { AuthGuard } from "./AuthGuard";
-import { Sidebar } from "./Sidebar";
+import { BetaBanner } from "./BetaBanner";
+import { MobileDashboardNav, Sidebar } from "./Sidebar";
 
 export function DashboardShell({
   title,
@@ -16,6 +17,8 @@ export function DashboardShell({
   return (
     <AuthGuard>
       <div className="min-h-screen bg-cloud">
+        <BetaBanner />
+        <MobileDashboardNav />
         <div className="flex">
           <Sidebar />
           <main className="min-w-0 flex-1">

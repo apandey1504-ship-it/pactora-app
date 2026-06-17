@@ -24,14 +24,14 @@ import { useAuth } from "@/hooks/use-auth";
 import type { UserRole } from "@/types/database";
 import { Logo } from "./Logo";
 
-const dashboardItems = {
+export const dashboardItems = {
   client: { href: "/dashboard/client", label: "Client dashboard", icon: LayoutDashboard },
   contractor: { href: "/dashboard/contractor", label: "Contractor dashboard", icon: FileCheck },
   admin: { href: "/dashboard/admin", label: "Admin dashboard", icon: Users },
   arbitrator: { href: "/dashboard/admin", label: "Arbitrator dashboard", icon: Users }
 } satisfies Record<UserRole, { href: string; label: string; icon: typeof LayoutDashboard }>;
 
-const sharedItems = [
+export const sharedItems = [
   { href: "/contracts", label: "Contracts", icon: FileText },
   { href: "/insurance", label: "Insurance", icon: ShieldPlus },
   { href: "/verification", label: "Verification", icon: Landmark },
@@ -109,5 +109,29 @@ export function Sidebar() {
         Logout
       </button>
     </aside>
+  );
+}
+
+export function MobileDashboardNav() {
+  const pathname = usePathname();
+  const { profile } = useAuth();
+  const currentRole = profile?.role ?? "client";
+  const items = [dashboardItems[currentRole], ...sharedItems];
+
+  return (
+    <nav className="sticky top-8 z-40 flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
+      {items.map((item) => (
+        <Link
+          key={item.href}
+          href={item.href}
+          className={`inline-flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-black ${
+            pathname === item.href ? "bg-purple text-white" : "bg-cloud text-slate-600"
+          }`}
+        >
+          <item.icon size={15} />
+          {item.label}
+        </Link>
+      ))}
+    </nav>
   );
 }
