@@ -134,9 +134,9 @@ export default function SolutionsPage() {
                 </div>
                 <ShieldCheck className="text-emerald" size={34} />
               </div>
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <div className="mobile-scrollbar -mx-5 mt-6 flex snap-x gap-3 overflow-x-auto px-5 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0">
                 {protectionLayers.map(([title, text]) => (
-                  <div key={title} className="rounded-lg bg-white/10 p-4">
+                  <div key={title} className="min-w-[230px] snap-start rounded-lg bg-white/10 p-4 sm:min-w-0">
                     <p className="font-black">{title}</p>
                     <p className="mt-2 text-sm font-semibold leading-6 text-white/68">{text}</p>
                   </div>
@@ -152,9 +152,9 @@ export default function SolutionsPage() {
           <p className="text-sm font-black uppercase tracking-wide text-purple">Use cases</p>
           <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Choose the category, then Pactora adapts the assurance workflow.</h2>
         </div>
-        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mobile-scrollbar -mx-4 mt-10 flex snap-x gap-4 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 xl:grid-cols-4">
           {solutions.map((solution) => (
-            <article key={solution.title} className="group rounded-lg border border-slate-200 bg-white p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-glow">
+            <article key={solution.title} className="group min-w-[275px] snap-start rounded-lg border border-slate-200 bg-white p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-glow md:min-w-0">
               <span className="grid h-11 w-11 place-items-center rounded-lg bg-purple/10 text-purple transition group-hover:bg-purple group-hover:text-white">
                 <solution.icon size={21} />
               </span>
@@ -178,9 +178,9 @@ export default function SolutionsPage() {
             <p className="text-sm font-black uppercase tracking-wide text-emerald">Workflow</p>
             <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">From contract to closeout, every major action becomes traceable.</h2>
           </div>
-          <div className="mt-10 grid gap-4 lg:grid-cols-4">
+          <div className="mobile-scrollbar -mx-4 mt-10 flex snap-x gap-4 overflow-x-auto px-4 lg:mx-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-0">
             {workflow.map((step, index) => (
-              <article key={step.title} className="rounded-lg border border-white/10 bg-white/5 p-5">
+              <article key={step.title} className="min-w-[275px] snap-start rounded-lg border border-white/10 bg-white/5 p-5 lg:min-w-0">
                 <div className="flex items-center justify-between gap-4">
                   <span className="grid h-11 w-11 place-items-center rounded-lg bg-white/10 text-emerald">
                     <step.icon size={20} />
@@ -204,14 +204,14 @@ export default function SolutionsPage() {
               Clients get approval control and protected visibility. Contractors get clearer scope, better evidence records, and fewer payment disputes.
             </p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="mobile-scrollbar -mx-4 flex snap-x gap-4 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0">
             {[
               ["Client view", "Create projects, invite contractors, approve milestones, govern changes, review trust signals."],
               ["Contractor view", "Accept projects, submit work, request extensions, respond to changes, upload evidence."],
               ["Admin view", "Verify companies, review disputes, freeze projects, inspect audit logs, delegate staff access."],
               ["Payment view", "Track project cost, held value, released value, and payment readiness without adding Stripe yet."]
             ].map(([title, text]) => (
-              <div key={title} className="rounded-lg border border-slate-200 bg-white p-5 shadow-soft">
+              <div key={title} className="min-w-[270px] snap-start rounded-lg border border-slate-200 bg-white p-5 shadow-soft sm:min-w-0">
                 <div className="flex items-center justify-between gap-3">
                   <p className="font-black">{title}</p>
                   <ArrowRight className="text-purple" size={18} />

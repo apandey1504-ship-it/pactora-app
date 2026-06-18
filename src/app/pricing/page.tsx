@@ -55,9 +55,10 @@ export default function PricingPage() {
               </Link>
             </div>
           </div>
-          <div className="grid gap-4 rounded-lg border border-slate-200 bg-cloud p-4 shadow-soft sm:p-5">
+          <div className="rounded-lg border border-slate-200 bg-cloud p-4 shadow-soft sm:p-5">
+            <div className="mobile-scrollbar -mx-4 flex snap-x gap-3 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-1">
             {heroSignals.map((signal) => (
-              <div key={signal.label} className="flex items-center justify-between gap-4 rounded-lg bg-white p-4">
+              <div key={signal.label} className="flex min-w-[255px] snap-start items-center justify-between gap-4 rounded-lg bg-white p-4 sm:min-w-0">
                 <div className="flex items-center gap-3">
                   <span className="grid h-10 w-10 place-items-center rounded-lg bg-purple/10 text-purple">
                     <signal.icon size={19} />
@@ -67,19 +68,21 @@ export default function PricingPage() {
                 <p className="text-lg font-black text-navy">{signal.value}</p>
               </div>
             ))}
+            </div>
           </div>
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-5 sm:py-16 lg:px-8">
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mobile-scrollbar -mx-4 flex snap-x gap-4 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 xl:grid-cols-4">
           {pricingPlans.map((plan) => (
+            <div key={plan.name} className="min-w-[280px] snap-start md:min-w-0">
             <PricingCard
-              key={plan.name}
               {...plan}
               featured={plan.name === "Business"}
               href={plan.slug === "enterprise" ? "/contact" : `/checkout?plan=${plan.slug}`}
             />
+            </div>
           ))}
         </div>
 

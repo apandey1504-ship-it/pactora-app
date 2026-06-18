@@ -4,6 +4,16 @@ import { Logo } from "./Logo";
 
 const navItems = ["Product", "Solutions", "Pricing", "Resources", "Company"];
 
+function getNavHref(item: string) {
+  return item === "Solutions"
+    ? "/solutions"
+    : item === "Pricing"
+      ? "/pricing"
+      : item === "Resources"
+        ? "/faq"
+        : `/#${item.toLowerCase()}`;
+}
+
 export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/70 bg-white/80 backdrop-blur-xl">
@@ -14,14 +24,7 @@ export function Header() {
         </div>
         <nav className="hidden items-center gap-7 text-sm font-semibold text-slate-600 lg:flex">
           {navItems.map((item) => {
-            const href =
-              item === "Solutions"
-                ? "/solutions"
-                : item === "Pricing"
-                  ? "/pricing"
-                  : item === "Resources"
-                    ? "/faq"
-                    : `/#${item.toLowerCase()}`;
+            const href = getNavHref(item);
 
             return (
               <Link key={item} href={href} className="transition hover:text-navy">
@@ -42,6 +45,13 @@ export function Header() {
           </Link>
         </div>
       </div>
+      <nav className="mobile-scrollbar flex gap-2 overflow-x-auto px-4 pb-3 text-xs font-black text-slate-500 lg:hidden">
+        {navItems.map((item) => (
+          <Link key={item} href={getNavHref(item)} className="min-w-max rounded-full bg-cloud px-3 py-2">
+            {item}
+          </Link>
+        ))}
+      </nav>
     </header>
   );
 }

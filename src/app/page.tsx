@@ -12,7 +12,6 @@ import {
   Layers3,
   LockKeyhole,
   MessageSquare,
-  Route,
   ShieldCheck,
   Sparkles,
   Truck,
@@ -99,13 +98,13 @@ function MiniDashboard() {
           </div>
           <TrustScoreBadge score={86} />
         </div>
-        <div className="mt-6 grid gap-3 sm:grid-cols-3">
+        <div className="mobile-scrollbar -mx-4 mt-6 flex snap-x gap-3 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0">
           {[
             ["Protected value", "$42,000"],
             ["Held amount", "$18,000"],
             ["Time risk", "12 days"]
           ].map(([label, value]) => (
-            <div key={label} className="rounded-lg bg-white/10 p-4">
+            <div key={label} className="min-w-[165px] snap-start rounded-lg bg-white/10 p-4 sm:min-w-0">
               <p className="text-xs font-black uppercase tracking-wide text-white/48">{label}</p>
               <p className="mt-2 text-2xl font-black">{value}</p>
             </div>
@@ -174,9 +173,9 @@ export default function LandingPage() {
                 Book a Demo
               </Link>
             </div>
-            <div className="mt-8 grid max-w-2xl gap-3 sm:grid-cols-3">
+            <div className="mobile-scrollbar -mx-4 mt-8 flex max-w-2xl snap-x gap-3 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0">
               {proofStats.map(([value, label]) => (
-                <div key={label} className="rounded-lg border border-slate-200 bg-cloud p-4">
+                <div key={label} className="min-w-[210px] snap-start rounded-lg border border-slate-200 bg-cloud p-4 sm:min-w-0">
                   <p className="text-2xl font-black text-navy">{value}</p>
                   <p className="mt-2 text-xs font-black leading-5 text-slate-500">{label}</p>
                 </div>
@@ -188,9 +187,9 @@ export default function LandingPage() {
       </section>
 
       <section className="border-y border-slate-200 bg-white px-4 py-6 sm:px-5 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 text-sm font-black text-slate-500">
+        <div className="mobile-scrollbar mx-auto flex max-w-7xl snap-x gap-3 overflow-x-auto text-sm font-black text-slate-500 sm:flex-wrap sm:items-center sm:justify-between sm:overflow-visible">
           {["Contract assurance", "Milestone payments", "Change governance", "Trust verification", "Dispute prevention"].map((item) => (
-            <span key={item} className="inline-flex items-center gap-2">
+            <span key={item} className="inline-flex min-w-max snap-start items-center gap-2 rounded-full bg-cloud px-3 py-2 sm:bg-transparent sm:px-0 sm:py-0">
               <span className="h-2 w-2 rounded-full bg-emerald" />
               {item}
             </span>
@@ -208,9 +207,9 @@ export default function LandingPage() {
             Inspired by modern revenue platforms, Pactora brings the contract lifecycle into a clean, guided workflow where every decision can be reviewed later.
           </p>
         </div>
-        <div className="mt-10 grid gap-5 lg:grid-cols-5">
+        <div className="mobile-scrollbar -mx-4 mt-10 flex snap-x gap-4 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-5">
           {engineSteps.map((step) => (
-            <Link key={step.title} href="/solutions" className="group rounded-lg border border-slate-200 bg-white p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-glow">
+            <Link key={step.title} href="/solutions" className="group min-w-[255px] snap-start rounded-lg border border-slate-200 bg-white p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-glow sm:min-w-0">
               <span className="grid h-11 w-11 place-items-center rounded-lg bg-purple/10 text-purple transition group-hover:bg-purple group-hover:text-white">
                 <step.icon size={20} />
               </span>
@@ -236,9 +235,9 @@ export default function LandingPage() {
               See all solutions
             </Link>
           </div>
-          <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mobile-scrollbar -mx-4 mt-10 flex snap-x gap-4 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 xl:grid-cols-3">
             {solutionCards.map((solution) => (
-              <Link key={solution.title} href="/solutions" className="group rounded-lg border border-white/10 bg-white/5 p-5 transition hover:-translate-y-1 hover:bg-white/10">
+              <Link key={solution.title} href="/solutions" className="group min-w-[275px] snap-start rounded-lg border border-white/10 bg-white/5 p-5 transition hover:-translate-y-1 hover:bg-white/10 md:min-w-0">
                 <solution.icon className="text-emerald" size={24} />
                 <h3 className="mt-5 text-xl font-black">{solution.title}</h3>
                 <p className="mt-3 text-sm font-semibold leading-6 text-white/68">{solution.text}</p>
@@ -260,9 +259,9 @@ export default function LandingPage() {
               Pactora is backend-ready for authentication, notifications, storage, signatures, verification, and future payment-provider workflows.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="mobile-scrollbar -mx-5 flex snap-x gap-3 overflow-x-auto px-5 sm:mx-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:px-0">
             {integrations.map((item) => (
-              <div key={item} className="rounded-lg bg-cloud px-4 py-5 text-center text-sm font-black text-navy transition hover:-translate-y-1 hover:bg-purple hover:text-white">
+              <div key={item} className="min-w-[145px] snap-start rounded-lg bg-cloud px-4 py-5 text-center text-sm font-black text-navy transition hover:-translate-y-1 hover:bg-purple hover:text-white sm:min-w-0">
                 {item}
               </div>
             ))}
