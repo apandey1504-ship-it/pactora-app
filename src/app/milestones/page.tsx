@@ -58,7 +58,7 @@ export default function MilestonesPage() {
     <DashboardShell
       title="Milestones"
       subtitle="Track deliverables, approvals, acceptance evidence, and payment readiness."
-      action={<div className="flex flex-wrap items-center gap-3"><DataSourceBadge source={source} loading={loading} /><button onClick={() => setShowForm((value) => !value)} className="inline-flex items-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white"><Plus size={17} /> Add milestone</button></div>}
+      action={<><DataSourceBadge source={source} loading={loading} /><button onClick={() => setShowForm((value) => !value)} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white sm:w-auto"><Plus size={17} /> Add milestone</button></>}
     >
       {showForm ? (
         <form onSubmit={handleCreateMilestone} className="mb-6 rounded-lg border border-slate-200 bg-white p-5 shadow-soft">

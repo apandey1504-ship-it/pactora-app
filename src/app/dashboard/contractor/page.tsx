@@ -38,7 +38,7 @@ export default function ContractorDashboardPage() {
       title="Contractor dashboard"
       subtitle="Accept projects, submit work, request timeline changes, and keep clients aligned."
       allowedRoles={["contractor"]}
-      action={<div className="flex flex-wrap items-center gap-3"><DataSourceBadge source={milestoneSource} loading={loading} /><button className="inline-flex items-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white"><FileUp size={17} /> Submit work</button></div>}
+      action={<><DataSourceBadge source={milestoneSource} loading={loading} /><button className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white sm:w-auto"><FileUp size={17} /> Submit work</button></>}
     >
       {error ? <div className="mb-6"><ErrorState message={`Supabase request failed: ${error}`} /></div> : null}
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -48,11 +48,11 @@ export default function ContractorDashboardPage() {
       </div>
       <div className="mt-8 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <section>
-          <div className="mb-4 flex flex-wrap gap-3">
-            <Link href="/projects" className="rounded-lg bg-white px-4 py-2.5 text-sm font-black text-navy ring-1 ring-slate-200">Accept project</Link>
-            <Link href="/milestones" className="rounded-lg bg-white px-4 py-2.5 text-sm font-black text-navy ring-1 ring-slate-200">Submit milestone work</Link>
-            <Link href="/change-requests" className="rounded-lg bg-white px-4 py-2.5 text-sm font-black text-navy ring-1 ring-slate-200">Request timeline extension</Link>
-            <Link href="/messages" className="rounded-lg bg-white px-4 py-2.5 text-sm font-black text-navy ring-1 ring-slate-200">Message client</Link>
+          <div className="mb-4 grid gap-3 sm:grid-cols-2 xl:flex xl:flex-wrap">
+            <Link href="/projects" className="rounded-lg bg-white px-4 py-2.5 text-center text-sm font-black text-navy ring-1 ring-slate-200">Accept project</Link>
+            <Link href="/milestones" className="rounded-lg bg-white px-4 py-2.5 text-center text-sm font-black text-navy ring-1 ring-slate-200">Submit milestone work</Link>
+            <Link href="/change-requests" className="rounded-lg bg-white px-4 py-2.5 text-center text-sm font-black text-navy ring-1 ring-slate-200">Request timeline extension</Link>
+            <Link href="/messages" className="rounded-lg bg-white px-4 py-2.5 text-center text-sm font-black text-navy ring-1 ring-slate-200">Message client</Link>
           </div>
           <MilestoneTable milestones={milestones} onSubmit={handleSubmitMilestone} />
         </section>

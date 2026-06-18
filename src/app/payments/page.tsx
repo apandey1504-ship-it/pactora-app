@@ -40,16 +40,16 @@ export default function PaymentsPage() {
     <DashboardShell
       title="Payments"
       subtitle="Pactora Secure Milestone Payments™ workflow, release readiness, and future payment partner integrations."
-      action={<div className="flex flex-wrap items-center gap-3"><DataSourceBadge source={source} loading={loading} /><button className="inline-flex items-center gap-2 rounded-lg bg-navy px-4 py-3 text-sm font-black text-white"><LockKeyhole size={17} /> Payments disabled</button></div>}
+      action={<><DataSourceBadge source={source} loading={loading} /><button className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-navy px-4 py-3 text-sm font-black text-white sm:w-auto"><LockKeyhole size={17} /> Payments disabled</button></>}
     >
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {stats.map((stat, index) => (
           <DashboardCard key={stat.label} {...stat} icon={[WalletCards, LockKeyhole, CreditCard, CreditCard][index]} />
         ))}
       </div>
-      <section className="mt-6 rounded-lg border border-slate-200 bg-white p-8 shadow-soft">
+      <section className="mt-6 rounded-lg border border-slate-200 bg-white p-5 shadow-soft sm:p-8">
         <CreditCard className="text-purple" size={34} />
-        <h2 className="mt-5 text-3xl font-black tracking-tight text-navy">Payment partner rails are not integrated yet.</h2>
+        <h2 className="mt-5 text-2xl font-black tracking-tight text-navy sm:text-3xl">Payment partner rails are not integrated yet.</h2>
         <p className="mt-3 max-w-2xl font-medium leading-7 text-slate-600">
           Pactora is structured to connect payment status to milestone approvals later through Stripe Connect or a similar provider. For now, this page shows release readiness without moving money.
         </p>

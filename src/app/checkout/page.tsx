@@ -16,10 +16,10 @@ export default function CheckoutPage({
   return (
     <main className="min-h-screen bg-cloud text-navy">
       <Header />
-      <section className="mx-auto grid max-w-6xl gap-6 px-5 py-14 lg:grid-cols-[1fr_380px] lg:px-8">
-        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-soft">
+      <section className="mx-auto grid max-w-6xl gap-6 px-4 py-10 sm:px-5 sm:py-14 lg:grid-cols-[1fr_380px] lg:px-8">
+        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-soft sm:p-6">
           <p className="text-sm font-black uppercase tracking-wide text-purple">Checkout preview</p>
-          <h1 className="mt-3 text-4xl font-black tracking-tight">Start {plan.name}</h1>
+          <h1 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Start {plan.name}</h1>
           <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-slate-600">
             Select your Pactora subscription for beta access. Real card collection will connect through Stripe or another trusted payment partner before public launch.
           </p>
@@ -71,7 +71,7 @@ export default function CheckoutPage({
           </div>
         </div>
 
-        <aside className="rounded-lg border border-slate-200 bg-white p-6 shadow-soft">
+        <aside className="rounded-lg border border-slate-200 bg-white p-5 shadow-soft sm:p-6">
           <ShieldCheck className="text-purple" size={28} />
           <h2 className="mt-4 text-2xl font-black text-navy">{plan.name}</h2>
           <p className="mt-1 text-3xl font-black text-navy">{plan.price}</p>

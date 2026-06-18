@@ -60,7 +60,7 @@ export default function ProjectsPage() {
     <DashboardShell
       title="Projects"
       subtitle="All protected agreements, counterparties, values, due dates, and trust signals."
-      action={<div className="flex flex-wrap items-center gap-3"><DataSourceBadge source={source} loading={loading} /><a href="/dashboard/client" className="inline-flex items-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white"><Plus size={17} /> Create project</a></div>}
+      action={<><DataSourceBadge source={source} loading={loading} /><a href="/dashboard/client" className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white sm:w-auto"><Plus size={17} /> Create project</a></>}
     >
       {error ? <div className="mb-6"><ErrorState message={`Supabase request failed: ${error}`} /></div> : null}
       {actionError ? <div className="mb-6"><ErrorState message={actionError} /></div> : null}
@@ -91,7 +91,7 @@ export default function ProjectsPage() {
               <button
                 onClick={() => handleAcceptProject(project.id)}
                 disabled={acceptingProjectId === project.id}
-                className="rounded-lg bg-purple px-4 py-3 text-sm font-black text-white disabled:opacity-50"
+                className="w-full rounded-lg bg-purple px-4 py-3 text-sm font-black text-white disabled:opacity-50 sm:w-auto"
               >
                 {acceptingProjectId === project.id ? "Accepting" : "Accept project"}
               </button>

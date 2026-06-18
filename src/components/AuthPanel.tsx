@@ -79,10 +79,10 @@ export function AuthPanel({
 
   return (
     <main className="grid min-h-screen bg-cloud lg:grid-cols-[1fr_0.9fr]">
-      <section className="flex items-center justify-center px-5 py-10">
-        <div className="w-full max-w-md rounded-lg border border-slate-200 bg-white p-8 shadow-soft">
+      <section className="flex items-center justify-center px-4 py-6 sm:px-5 sm:py-10">
+        <div className="w-full max-w-md rounded-lg border border-slate-200 bg-white p-5 shadow-soft sm:p-8">
           <Logo />
-          <h1 className="mt-10 text-3xl font-black tracking-tight text-navy">
+          <h1 className="mt-8 text-3xl font-black tracking-tight text-navy sm:mt-10">
             {isSignup ? "Create your Pactora workspace" : "Welcome back"}
           </h1>
           <p className="mt-3 text-sm font-semibold leading-6 text-slate-500">
@@ -109,7 +109,7 @@ export function AuthPanel({
                 </label>
                 <div>
                   <span className="text-sm font-bold text-navy">Mobile</span>
-                  <div className="mt-2 grid grid-cols-[120px_1fr] gap-2">
+                  <div className="mt-2 grid gap-2 min-[420px]:grid-cols-[120px_1fr]">
                     <select
                       name="country"
                       value={countryCode === "+91" ? "IN" : countryCode === "+44" ? "GB" : countryCode === "+61" ? "AU" : "US"}
@@ -229,7 +229,7 @@ export function AuthPanel({
         <div className="flex h-full flex-col justify-between rounded-lg border border-white/10 bg-white/5 p-8">
           <div>
             <p className="text-sm font-black uppercase tracking-wide text-emerald">Contract assurance</p>
-            <h2 className="mt-5 max-w-md text-5xl font-black tracking-tight">
+            <h2 className="mt-5 max-w-md text-4xl font-black tracking-tight xl:text-5xl">
               Agreements stay clear after the signature.
             </h2>
           </div>

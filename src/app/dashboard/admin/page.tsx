@@ -127,7 +127,7 @@ export default function AdminDashboardPage() {
       title="Admin dashboard"
       subtitle="Review platform health, disputes, business verification, and project controls."
       allowedRoles={["admin"]}
-      action={<div className="flex flex-wrap items-center gap-3"><DataSourceBadge source={source} loading={loading} /><button className="inline-flex items-center gap-2 rounded-lg bg-navy px-4 py-3 text-sm font-black text-white"><PauseCircle size={17} /> Freeze project</button></div>}
+      action={<><DataSourceBadge source={source} loading={loading} /><button className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-navy px-4 py-3 text-sm font-black text-white sm:w-auto"><PauseCircle size={17} /> Freeze project</button></>}
     >
       {error ? <div className="mb-6"><ErrorState message={`Projects request failed: ${error}`} /></div> : null}
       {usersError ? <div className="mb-6"><ErrorState message={`Users request failed: ${usersError}`} /></div> : null}

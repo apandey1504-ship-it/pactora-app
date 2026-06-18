@@ -60,14 +60,14 @@ export default function DemoPage() {
 
   return (
     <main className="grid min-h-screen bg-cloud lg:grid-cols-[1fr_0.9fr]">
-      <section className="flex items-center justify-center px-5 py-10">
-        <div className="w-full max-w-xl rounded-lg border border-slate-200 bg-white p-8 shadow-soft">
+      <section className="flex items-center justify-center px-4 py-6 sm:px-5 sm:py-10">
+        <div className="w-full max-w-xl rounded-lg border border-slate-200 bg-white p-5 shadow-soft sm:p-8">
           <Logo />
           <Link href="/" className="mt-8 inline-flex items-center gap-2 text-sm font-black text-purple">
             <ArrowLeft size={16} />
             Back to Pactora
           </Link>
-          <h1 className="mt-6 text-4xl font-black tracking-tight text-navy">Book a Pactora demo</h1>
+          <h1 className="mt-6 text-3xl font-black tracking-tight text-navy sm:text-4xl">Book a Pactora demo</h1>
           <p className="mt-3 text-sm font-semibold leading-6 text-slate-500">
             Tell us what kind of agreements you want to protect. We will email you to schedule a call.
           </p>
@@ -128,7 +128,7 @@ export default function DemoPage() {
         <div className="flex h-full flex-col justify-between rounded-lg border border-white/10 bg-white/5 p-8">
           <div>
             <p className="text-sm font-black uppercase tracking-wide text-emerald">Private beta</p>
-            <h2 className="mt-5 max-w-md text-5xl font-black tracking-tight">
+            <h2 className="mt-5 max-w-md text-4xl font-black tracking-tight xl:text-5xl">
               See how cost, time, scope, and trust protection works.
             </h2>
           </div>

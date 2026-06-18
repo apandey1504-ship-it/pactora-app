@@ -61,7 +61,7 @@ export default function ChangeRequestsPage() {
     <DashboardShell
       title="Change requests"
       subtitle="Document scope, timeline, and cost changes before they affect the agreement."
-      action={<div className="flex flex-wrap items-center gap-3"><DataSourceBadge source={source} loading={loading} /><button onClick={() => setShowForm((value) => !value)} className="inline-flex items-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white"><Plus size={17} /> Request change</button></div>}
+      action={<><DataSourceBadge source={source} loading={loading} /><button onClick={() => setShowForm((value) => !value)} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white sm:w-auto"><Plus size={17} /> Request change</button></>}
     >
       {showForm ? (
         <form onSubmit={handleCreateChangeRequest} className="mb-6 rounded-lg border border-slate-200 bg-white p-5 shadow-soft">
@@ -84,7 +84,7 @@ export default function ChangeRequestsPage() {
       ) : null}
       {error ? <div className="mb-6"><ErrorState message={`Supabase request failed: ${error}`} /></div> : null}
       {formError ? <div className="mb-6"><ErrorState message={formError} /></div> : null}
-      <div className="mb-6 rounded-lg bg-navy p-6 text-white">
+      <div className="mb-6 rounded-lg bg-navy p-5 text-white sm:p-6">
         <div className="flex items-center gap-3">
           <GitPullRequest className="text-emerald" />
           <p className="font-black">Every change is linked to its commercial impact and approval trail.</p>

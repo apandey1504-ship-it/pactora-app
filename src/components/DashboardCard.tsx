@@ -19,7 +19,7 @@ export function DashboardCard({
           <Icon size={18} />
         </span>
       </div>
-      <div className="mt-5 flex items-end justify-between">
+      <div className="mt-5 flex flex-wrap items-end justify-between gap-2">
         <p className="text-3xl font-black tracking-tight text-navy">{value}</p>
         <p className="text-sm font-bold text-emerald">{delta}</p>
       </div>

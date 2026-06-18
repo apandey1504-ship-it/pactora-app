@@ -78,13 +78,13 @@ export function DocumentUploadPanel({
         </div>
       </div>
 
-      <form onSubmit={handleUpload} className="mt-5 grid gap-3 lg:grid-cols-[180px_1fr_150px]">
+      <form onSubmit={handleUpload} className="mt-5 grid gap-3 lg:grid-cols-[180px_minmax(0,1fr)_150px]">
         <select name="category" className="rounded-lg border border-slate-200 px-3 py-3 text-sm font-black text-navy outline-none focus:border-purple">
           {documentCategories.map((category) => (
             <option key={category} value={category}>{category}</option>
           ))}
         </select>
-        <input name="file" type="file" className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold text-slate-600 outline-none focus:border-purple" />
+        <input name="file" type="file" className="min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold text-slate-600 outline-none focus:border-purple" />
         <button disabled={saving} className="inline-flex items-center justify-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white disabled:opacity-50">
           <FileUp size={17} /> {saving ? "Uploading" : "Upload"}
         </button>

@@ -18,9 +18,9 @@ export default function TrustScorePage() {
       action={<div className="flex flex-wrap items-center gap-3"><DataSourceBadge source={source} loading={loading} /><TrustScoreBadge score={score} /></div>}
     >
       <section className="grid gap-6 lg:grid-cols-[380px_1fr]">
-        <div className="rounded-lg bg-navy p-8 text-white shadow-glow">
+        <div className="rounded-lg bg-navy p-6 text-white shadow-glow sm:p-8">
           <ShieldCheck className="text-emerald" size={42} />
-          <p className="mt-8 text-7xl font-black tracking-tight">{score}</p>
+          <p className="mt-8 text-6xl font-black tracking-tight sm:text-7xl">{score}</p>
           <p className="mt-3 text-xl font-black">Excellent assurance profile</p>
           <p className="mt-3 text-sm font-medium leading-6 text-white/68">
             Strong approval hygiene, low dispute exposure, and verified business identity.

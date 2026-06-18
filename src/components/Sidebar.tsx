@@ -92,7 +92,7 @@ export function MobileDashboardNav() {
   const items = [dashboardItems[currentRole], ...sharedItems];
 
   return (
-    <nav className="sticky top-8 z-40 flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
+    <nav className="mobile-scrollbar sticky top-8 z-40 flex gap-2 overflow-x-auto border-b border-slate-200 bg-white px-3 py-3 lg:hidden">
       {items.map((item) => (
         <Link
           key={item.href}

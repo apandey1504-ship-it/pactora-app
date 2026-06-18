@@ -33,7 +33,7 @@ export function MessageThread({
       <div className="space-y-4">
         {messages.map((message) => (
           <div key={message.id} className="rounded-lg bg-slate-50 p-4">
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="font-black text-navy">{message.author}</p>
                 <p className="text-xs font-bold uppercase tracking-wide text-slate-400">{message.role}</p>
@@ -44,7 +44,7 @@ export function MessageThread({
           </div>
         ))}
       </div>
-      <form className="mt-5 flex gap-3" onSubmit={handleSubmit}>
+      <form className="mt-5 grid gap-3 sm:flex" onSubmit={handleSubmit}>
         <input
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
@@ -52,7 +52,7 @@ export function MessageThread({
           className="min-w-0 flex-1 rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-purple focus:ring-4 focus:ring-purple/10"
           placeholder="Write a message"
         />
-        <button disabled={disabled || sending} className="rounded-lg bg-purple px-5 py-3 text-sm font-black text-white disabled:opacity-50">
+        <button disabled={disabled || sending} className="rounded-lg bg-purple px-5 py-3 text-sm font-black text-white disabled:opacity-50 sm:w-auto">
           {sending ? "Sending" : "Send"}
         </button>
       </form>

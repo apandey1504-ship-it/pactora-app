@@ -7,10 +7,10 @@ export default function PricingPage() {
   return (
     <main className="min-h-screen bg-cloud text-navy">
       <Header />
-      <section className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-5 sm:py-16 lg:px-8">
         <p className="text-sm font-black uppercase tracking-wide text-purple">Pricing</p>
-        <h1 className="mt-3 max-w-3xl text-5xl font-black tracking-tight">Beta pricing for protected agreements.</h1>
-        <p className="mt-5 max-w-2xl text-lg font-medium leading-8 text-slate-600">
+        <h1 className="mt-3 max-w-3xl text-4xl font-black tracking-tight sm:text-5xl">Beta pricing for protected agreements.</h1>
+        <p className="mt-5 max-w-2xl text-base font-medium leading-7 text-slate-600 sm:text-lg sm:leading-8">
           Start with project assurance, then scale into secure milestone payment coordination, verification, audit controls, disputes, and trust-score operations.
         </p>
         <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -23,9 +23,9 @@ export default function PricingPage() {
             />
           ))}
         </div>
-        <section className="mt-12 rounded-lg border border-slate-200 bg-white p-6 shadow-soft">
+        <section className="mt-10 rounded-lg border border-slate-200 bg-white p-5 shadow-soft sm:mt-12 sm:p-6">
           <p className="text-sm font-black uppercase tracking-wide text-purple">Transaction & Payment Fees</p>
-          <h2 className="mt-3 text-3xl font-black tracking-tight text-navy">Pactora Secure Milestone Payments™</h2>
+          <h2 className="mt-3 text-2xl font-black tracking-tight text-navy sm:text-3xl">Pactora Secure Milestone Payments™</h2>
           <div className="mt-6 grid gap-4 lg:grid-cols-3">
             <div className="rounded-lg bg-cloud p-5">
               <p className="font-black text-navy">Pactora Platform Fee</p>
@@ -50,7 +50,7 @@ export default function PricingPage() {
             Funds are processed through trusted payment partners. Pactora provides workflow, approval, audit, and dispute documentation around milestone payments. Pactora is not a bank, money transmitter, insurer, or escrow agent in the MVP.
           </p>
         </section>
-        <Link href="/signup" className="mt-10 inline-flex rounded-lg bg-purple px-5 py-3.5 font-black text-white shadow-glow">
+        <Link href="/signup" className="mt-10 inline-flex w-full justify-center rounded-lg bg-purple px-5 py-3.5 font-black text-white shadow-glow sm:w-auto">
           Join private beta
         </Link>
       </section>

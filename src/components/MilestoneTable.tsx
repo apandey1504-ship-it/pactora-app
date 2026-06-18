@@ -13,7 +13,7 @@ export function MilestoneTable({
   onRequestRevision?: (id: string) => void;
 }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-soft">
+    <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-soft">
       <table className="w-full min-w-[720px] text-left">
         <thead className="bg-slate-50 text-xs font-black uppercase tracking-wide text-slate-500">
           <tr>

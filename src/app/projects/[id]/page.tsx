@@ -173,7 +173,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
     <DashboardShell
       title={project.name}
       subtitle={`${project.company} and ${project.counterparty}`}
-      action={<div className="flex flex-wrap items-center gap-3"><DataSourceBadge source={source} loading={loading} /><TrustScoreBadge score={project.trustScore} /></div>}
+      action={<><DataSourceBadge source={source} loading={loading} /><TrustScoreBadge score={project.trustScore} /></>}
     >
       {projectError ? (
         <div className="mb-6 rounded-lg bg-rose-50 p-4 text-sm font-bold text-rose-700">{projectError}</div>
@@ -184,17 +184,17 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
             <h2 className="text-lg font-black text-navy">Contractor workflow</h2>
             <p className="mt-1 text-sm font-semibold text-slate-500">Accept the project, set milestones, submit work, or request timeline changes.</p>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <button onClick={handleAcceptProject} disabled={saving} className="inline-flex items-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white disabled:opacity-50">
+          <div className="grid w-full gap-3 sm:grid-cols-2 xl:flex xl:w-auto xl:flex-wrap">
+            <button onClick={handleAcceptProject} disabled={saving} className="inline-flex items-center justify-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white disabled:opacity-50">
               <CheckCircle2 size={17} /> Accept project
             </button>
-            <button onClick={() => setShowMilestoneForm((value) => !value)} className="inline-flex items-center gap-2 rounded-lg bg-navy px-4 py-3 text-sm font-black text-white">
+            <button onClick={() => setShowMilestoneForm((value) => !value)} className="inline-flex items-center justify-center gap-2 rounded-lg bg-navy px-4 py-3 text-sm font-black text-white">
               <Plus size={17} /> Set milestone
             </button>
-            <button onClick={handleTimelineExtension} disabled={saving} className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-black text-navy ring-1 ring-slate-200 disabled:opacity-50">
+            <button onClick={handleTimelineExtension} disabled={saving} className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-black text-navy ring-1 ring-slate-200 disabled:opacity-50">
               <Clock3 size={17} /> Request extension
             </button>
-            <button onClick={() => setShowDisputeForm((value) => !value)} className="inline-flex items-center gap-2 rounded-lg bg-rose-50 px-4 py-3 text-sm font-black text-rose-700 ring-1 ring-rose-100">
+            <button onClick={() => setShowDisputeForm((value) => !value)} className="inline-flex items-center justify-center gap-2 rounded-lg bg-rose-50 px-4 py-3 text-sm font-black text-rose-700 ring-1 ring-rose-100">
               <AlertTriangle size={17} /> Raise dispute
             </button>
           </div>

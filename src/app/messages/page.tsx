@@ -67,7 +67,7 @@ export default function MessagesPage() {
     <DashboardShell
       title="Messages"
       subtitle="Keep decision-making tied to projects, milestones, and scope changes."
-      action={<div className="flex flex-wrap items-center gap-3"><DataSourceBadge source={source} loading={loading} /><button className="inline-flex items-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white"><MessageSquare size={17} /> New thread</button></div>}
+      action={<><DataSourceBadge source={source} loading={loading} /><button className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white sm:w-auto"><MessageSquare size={17} /> New thread</button></>}
     >
       {error ? <div className="mb-6"><ErrorState message={`Supabase request failed: ${error}`} /></div> : null}
       {sendError ? <div className="mb-6"><ErrorState message={sendError} /></div> : null}

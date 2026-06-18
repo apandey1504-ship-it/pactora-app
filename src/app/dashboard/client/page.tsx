@@ -84,7 +84,7 @@ export default function ClientDashboardPage() {
       title="Client dashboard"
       subtitle="Manage project assurance, approvals, change requests, and contractor trust."
       allowedRoles={["client"]}
-      action={<div className="flex flex-wrap items-center gap-3"><DataSourceBadge source={source} loading={loading} /><button onClick={() => setShowProjectForm((value) => !value)} className="inline-flex items-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white"><Plus size={17} /> Create project</button></div>}
+      action={<><DataSourceBadge source={source} loading={loading} /><button onClick={() => setShowProjectForm((value) => !value)} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white sm:w-auto"><Plus size={17} /> Create project</button></>}
     >
       {showProjectForm ? (
         <form onSubmit={handleCreateProject} className="mb-6 rounded-lg border border-slate-200 bg-white p-5 shadow-soft">
@@ -149,7 +149,7 @@ export default function ClientDashboardPage() {
         </div>
         <aside className="rounded-lg border border-slate-200 bg-white p-5 shadow-soft">
           <h2 className="text-lg font-black text-navy">Client actions</h2>
-          <div className="mt-5 space-y-3">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
             <button onClick={() => setShowProjectForm(true)} className="w-full rounded-lg bg-cloud px-4 py-3 text-left text-sm font-black text-navy transition hover:bg-purple hover:text-white">
               Create project
             </button>

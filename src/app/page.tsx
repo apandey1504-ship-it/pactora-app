@@ -23,16 +23,16 @@ export default function LandingPage() {
     <main className="bg-cloud text-navy">
       <Header />
       <section className="shell-grid overflow-hidden bg-white">
-        <div className="mx-auto grid max-w-7xl gap-12 px-5 pb-16 pt-14 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:pb-24 lg:pt-20">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 pb-12 pt-10 sm:px-5 sm:pb-16 sm:pt-14 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:pb-24 lg:pt-20">
           <div className="flex flex-col justify-center">
             <div className="inline-flex w-fit items-center gap-2 rounded-full bg-purple/10 px-3 py-1.5 text-sm font-black text-purple">
               <Sparkles size={15} />
               Contract assurance for modern teams
             </div>
-            <h1 className="mt-7 max-w-3xl text-5xl font-black tracking-tight text-navy sm:text-6xl lg:text-7xl">
+            <h1 className="mt-7 max-w-3xl text-4xl font-black tracking-tight text-navy sm:text-5xl lg:text-7xl">
               Every Agreement. Protected.
             </h1>
-            <p className="mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600">
+            <p className="mt-5 max-w-2xl text-base font-medium leading-7 text-slate-600 sm:text-lg sm:leading-8">
               Pactora helps businesses manage contracts, milestones, changes, approvals, secure milestone payments, and trust in one connected platform.
             </p>
             <div className="mt-7 grid max-w-xl gap-3 sm:grid-cols-2">
@@ -45,11 +45,11 @@ export default function LandingPage() {
                 <p className="mt-2 text-3xl font-black text-navy">42 days</p>
               </div>
             </div>
-            <div className="mt-9 flex flex-wrap gap-3">
-              <Link href="/checkout?plan=starter" className="rounded-lg bg-purple px-5 py-3.5 font-black text-white shadow-glow">
+            <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
+              <Link href="/checkout?plan=starter" className="rounded-lg bg-purple px-5 py-3.5 text-center font-black text-white shadow-glow">
                 Start Free
               </Link>
-              <Link href="/demo" className="rounded-lg bg-white px-5 py-3.5 font-black text-navy ring-1 ring-slate-200">
+              <Link href="/demo" className="rounded-lg bg-white px-5 py-3.5 text-center font-black text-navy ring-1 ring-slate-200">
                 Book a Demo
               </Link>
             </div>
@@ -63,7 +63,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="relative">
-            <div className="relative rounded-lg border border-slate-200 bg-white p-4 shadow-glow">
+            <div className="relative rounded-lg border border-slate-200 bg-white p-3 shadow-glow sm:p-4">
               <div className="rounded-lg bg-navy p-5 text-white">
                 <div className="flex items-center justify-between">
                   <div>
@@ -75,7 +75,7 @@ export default function LandingPage() {
                 <div className="mt-8 grid gap-3">
                   {projects.slice(0, 2).map((project) => (
                     <div key={project.id} className="rounded-lg bg-white p-4 text-navy">
-                      <div className="flex items-center justify-between gap-4">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                           <p className="font-black">{project.name}</p>
                           <p className="text-sm font-semibold text-slate-500">{project.value}</p>
@@ -114,10 +114,10 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
-      <section id="product" className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+      <section id="product" className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
         <div className="max-w-2xl">
           <p className="text-sm font-black uppercase tracking-wide text-purple">Product</p>
-          <h2 className="mt-3 text-4xl font-black tracking-tight">A safer operating layer for commercial work.</h2>
+          <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">A safer operating layer for commercial work.</h2>
         </div>
         <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature) => (
@@ -147,7 +147,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      <section id="pricing" className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+      <section id="pricing" className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
         <div className="max-w-2xl">
           <p className="text-sm font-black uppercase tracking-wide text-purple">Pricing</p>
           <h2 className="mt-3 text-4xl font-black tracking-tight">Plans for every agreement volume.</h2>
