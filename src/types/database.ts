@@ -152,6 +152,38 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["subscriptions"]["Insert"]>;
         Relationships: [];
       };
+      staff_access_grants: {
+        Row: {
+          id: string;
+          user_id: string;
+          access_level: string;
+          can_view_all_data: boolean;
+          can_manage_projects: boolean;
+          can_manage_payments: boolean;
+          can_review_disputes: boolean;
+          can_verify_companies: boolean;
+          can_export_worksheets: boolean;
+          granted_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          access_level?: string;
+          can_view_all_data?: boolean;
+          can_manage_projects?: boolean;
+          can_manage_payments?: boolean;
+          can_review_disputes?: boolean;
+          can_verify_companies?: boolean;
+          can_export_worksheets?: boolean;
+          granted_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["staff_access_grants"]["Insert"]>;
+        Relationships: [];
+      };
       projects: {
         Row: {
           id: string;
@@ -545,3 +577,4 @@ export type DocumentRecord = Database["public"]["Tables"]["documents"]["Row"];
 export type PaymentRecord = Database["public"]["Tables"]["payments"]["Row"];
 export type DisputeRecord = Database["public"]["Tables"]["disputes"]["Row"];
 export type TrustScoreRecord = Database["public"]["Tables"]["trust_scores"]["Row"];
+export type StaffAccessGrantRecord = Database["public"]["Tables"]["staff_access_grants"]["Row"];

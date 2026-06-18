@@ -112,7 +112,7 @@ as $$
 declare
   requested_role public.user_role := 'client';
 begin
-  if new.raw_user_meta_data ->> 'role' in ('client', 'contractor', 'admin', 'arbitrator') then
+  if new.raw_user_meta_data ->> 'role' in ('client', 'contractor') then
     requested_role := (new.raw_user_meta_data ->> 'role')::public.user_role;
   end if;
 
@@ -186,6 +186,22 @@ create table if not exists public.subscriptions (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (company_id)
+);
+
+create table if not exists public.staff_access_grants (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  access_level text not null default 'operations',
+  can_view_all_data boolean not null default false,
+  can_manage_projects boolean not null default false,
+  can_manage_payments boolean not null default false,
+  can_review_disputes boolean not null default false,
+  can_verify_companies boolean not null default false,
+  can_export_worksheets boolean not null default false,
+  granted_by uuid references public.profiles(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (user_id)
 );
 
 create table if not exists public.projects (
@@ -373,6 +389,10 @@ create index if not exists subscriptions_company_id_idx on public.subscriptions(
 create index if not exists subscriptions_plan_id_idx on public.subscriptions(plan_id);
 create index if not exists subscriptions_status_idx on public.subscriptions(status);
 
+create index if not exists staff_access_grants_user_id_idx on public.staff_access_grants(user_id);
+create index if not exists staff_access_grants_granted_by_idx on public.staff_access_grants(granted_by);
+create index if not exists staff_access_grants_access_level_idx on public.staff_access_grants(access_level);
+
 create index if not exists projects_client_company_id_idx on public.projects(client_company_id);
 create index if not exists projects_contractor_company_id_idx on public.projects(contractor_company_id);
 create index if not exists projects_created_by_idx on public.projects(created_by);
@@ -445,6 +465,11 @@ for each row execute function public.update_updated_at_column();
 drop trigger if exists subscriptions_updated_at on public.subscriptions;
 create trigger subscriptions_updated_at
 before update on public.subscriptions
+for each row execute function public.update_updated_at_column();
+
+drop trigger if exists staff_access_grants_updated_at on public.staff_access_grants;
+create trigger staff_access_grants_updated_at
+before update on public.staff_access_grants
 for each row execute function public.update_updated_at_column();
 
 drop trigger if exists projects_updated_at on public.projects;

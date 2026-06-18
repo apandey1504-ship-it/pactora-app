@@ -63,6 +63,7 @@ alter table public.companies enable row level security;
 alter table public.company_members enable row level security;
 alter table public.plans enable row level security;
 alter table public.subscriptions enable row level security;
+alter table public.staff_access_grants enable row level security;
 alter table public.projects enable row level security;
 alter table public.project_participants enable row level security;
 alter table public.milestones enable row level security;
@@ -87,12 +88,24 @@ drop policy if exists "profiles_update_own_or_admin" on public.profiles;
 create policy "profiles_update_own_or_admin"
 on public.profiles for update
 using (id = auth.uid() or public.is_admin())
-with check (id = auth.uid() or public.is_admin());
+with check (
+  public.is_admin()
+  or (
+    id = auth.uid()
+    and role in ('client', 'contractor')
+  )
+);
 
 drop policy if exists "profiles_insert_own_or_admin" on public.profiles;
 create policy "profiles_insert_own_or_admin"
 on public.profiles for insert
-with check (id = auth.uid() or public.is_admin());
+with check (
+  public.is_admin()
+  or (
+    id = auth.uid()
+    and role in ('client', 'contractor')
+  )
+);
 
 drop policy if exists "companies_select_member_or_admin" on public.companies;
 create policy "companies_select_member_or_admin"
@@ -152,6 +165,17 @@ create policy "subscriptions_update_company_member_or_admin"
 on public.subscriptions for update
 using (public.is_company_member(company_id) or public.is_admin())
 with check (public.is_company_member(company_id) or public.is_admin());
+
+drop policy if exists "staff_access_grants_select_admin" on public.staff_access_grants;
+create policy "staff_access_grants_select_admin"
+on public.staff_access_grants for select
+using (public.is_admin());
+
+drop policy if exists "staff_access_grants_write_admin" on public.staff_access_grants;
+create policy "staff_access_grants_write_admin"
+on public.staff_access_grants for all
+using (public.is_admin())
+with check (public.is_admin());
 
 drop policy if exists "projects_select_participant_or_admin" on public.projects;
 create policy "projects_select_participant_or_admin"

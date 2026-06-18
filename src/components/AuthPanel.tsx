@@ -218,10 +218,9 @@ export function AuthPanel({
               <Link href="/signup/contractor" className="rounded-lg bg-cloud px-4 py-3 text-center text-sm font-black text-navy">Contractor signup</Link>
             </div>
           ) : (
-            <div className="mt-4 grid gap-2 sm:grid-cols-3">
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
               <Link href="/login/client" className="rounded-lg bg-cloud px-3 py-2 text-center text-xs font-black text-navy">Client login</Link>
               <Link href="/login/contractor" className="rounded-lg bg-cloud px-3 py-2 text-center text-xs font-black text-navy">Contractor login</Link>
-              <Link href="/admin/login" className="rounded-lg bg-navy px-3 py-2 text-center text-xs font-black text-white">Admin login</Link>
             </div>
           )}
         </div>

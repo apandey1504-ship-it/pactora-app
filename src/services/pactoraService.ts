@@ -20,6 +20,8 @@ export type DocumentRow = Database["public"]["Tables"]["documents"]["Row"];
 export type DocumentInsert = Database["public"]["Tables"]["documents"]["Insert"];
 export type Payment = Database["public"]["Tables"]["payments"]["Row"];
 export type Subscription = Database["public"]["Tables"]["subscriptions"]["Row"];
+export type StaffAccessGrant = Database["public"]["Tables"]["staff_access_grants"]["Row"];
+export type StaffAccessGrantInsert = Database["public"]["Tables"]["staff_access_grants"]["Insert"];
 export type Dispute = Database["public"]["Tables"]["disputes"]["Row"];
 export type DisputeInsert = Database["public"]["Tables"]["disputes"]["Insert"];
 export type TrustScoreRow = Database["public"]["Tables"]["trust_scores"]["Row"];
@@ -1105,6 +1107,66 @@ export async function updateCompanyVerificationStatus(
   });
 
   return { data: company, source: "supabase" };
+}
+
+export async function getStaffAccessGrants(): Promise<ServiceResult<StaffAccessGrant[]>> {
+  const client = requireSupabase();
+
+  if (!client) {
+    return { data: [], source: "mock" };
+  }
+
+  const { data, error } = await client
+    .from("staff_access_grants")
+    .select("*")
+    .order("updated_at", { ascending: false });
+  throwIfError(error);
+
+  return { data: data ?? [], source: "supabase" };
+}
+
+export async function upsertStaffAccessGrant(
+  input: StaffAccessGrantInsert
+): Promise<ServiceResult<StaffAccessGrant | null>> {
+  const client = requireSupabase();
+
+  if (!client) {
+    return { data: null, source: "mock" };
+  }
+
+  const grantedBy = input.granted_by ?? await getAuthenticatedUserId();
+  const { data, error } = await client
+    .from("staff_access_grants")
+    .upsert(
+      {
+        ...input,
+        granted_by: grantedBy
+      },
+      { onConflict: "user_id" }
+    )
+    .select("*")
+    .single();
+  throwIfError(error);
+  const grant = ensureData(data);
+
+  await writeAuditLog({
+    user_id: grantedBy,
+    action: "staff_access.updated",
+    metadata: {
+      user_id: grant.user_id,
+      access_level: grant.access_level,
+      permissions: {
+        can_view_all_data: grant.can_view_all_data,
+        can_manage_projects: grant.can_manage_projects,
+        can_manage_payments: grant.can_manage_payments,
+        can_review_disputes: grant.can_review_disputes,
+        can_verify_companies: grant.can_verify_companies,
+        can_export_worksheets: grant.can_export_worksheets
+      }
+    }
+  });
+
+  return { data: grant, source: "supabase" };
 }
 
 export async function getAllDisputes(): Promise<ServiceResult<Dispute[]>> {

@@ -49,7 +49,7 @@ export default function LandingPage() {
               <Link href="/checkout?plan=starter" className="rounded-lg bg-purple px-5 py-3.5 font-black text-white shadow-glow">
                 Start Free
               </Link>
-              <Link href="/messages" className="rounded-lg bg-white px-5 py-3.5 font-black text-navy ring-1 ring-slate-200">
+              <Link href="/demo" className="rounded-lg bg-white px-5 py-3.5 font-black text-navy ring-1 ring-slate-200">
                 Book a Demo
               </Link>
             </div>
