@@ -89,14 +89,16 @@ const dashboardMilestones: { title: string; status: Status; progress: string }[]
 
 function MiniDashboard() {
   return (
-    <div className="relative rounded-lg border border-slate-200 bg-white p-3 shadow-glow sm:p-4">
-      <div className="rounded-lg bg-navy p-4 text-white sm:p-5">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-black text-emerald">Pactora Assurance Console</p>
-            <h2 className="mt-2 text-2xl font-black">Website build agreement</h2>
+    <div className="relative rounded-lg border border-slate-200 bg-white p-2.5 shadow-glow sm:p-4">
+      <div className="rounded-lg bg-navy p-4 text-white sm:p-5 lg:p-6">
+        <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
+          <div className="min-w-0">
+            <p className="text-xs font-black uppercase tracking-wide text-emerald sm:text-sm">Pactora Assurance Console</p>
+            <h2 className="mt-2 text-2xl font-black leading-tight sm:text-3xl lg:text-4xl">Website build agreement</h2>
           </div>
-          <TrustScoreBadge score={86} />
+          <div className="justify-self-start sm:justify-self-end">
+            <TrustScoreBadge score={86} />
+          </div>
         </div>
         <div className="mobile-scrollbar -mx-4 mt-6 flex snap-x gap-3 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0">
           {[
@@ -104,19 +106,19 @@ function MiniDashboard() {
             ["Held amount", "$18,000"],
             ["Time risk", "12 days"]
           ].map(([label, value]) => (
-            <div key={label} className="min-w-[165px] snap-start rounded-lg bg-white/10 p-4 sm:min-w-0">
-              <p className="text-xs font-black uppercase tracking-wide text-white/48">{label}</p>
-              <p className="mt-2 text-2xl font-black">{value}</p>
+            <div key={label} className="min-w-[150px] snap-start rounded-lg bg-white/10 p-3 sm:min-w-0 sm:p-4">
+              <p className="text-[11px] font-black uppercase tracking-wide text-white/48 sm:text-xs">{label}</p>
+              <p className="mt-2 text-2xl font-black leading-none sm:text-3xl">{value}</p>
             </div>
           ))}
         </div>
       </div>
-      <div className="mt-4 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="space-y-3">
+      <div className="mt-3 grid gap-3 lg:mt-4 lg:grid-cols-[0.9fr_1.1fr] lg:gap-4">
+        <div className="mobile-scrollbar -mx-2 flex snap-x gap-3 overflow-x-auto px-2 sm:mx-0 sm:block sm:space-y-3 sm:overflow-visible sm:px-0">
           {dashboardMilestones.map((milestone) => (
-            <div key={milestone.title} className="rounded-lg bg-cloud p-4">
-              <div className="flex items-center justify-between gap-3">
-                <p className="font-black text-navy">{milestone.title}</p>
+            <div key={milestone.title} className="min-w-[230px] snap-start rounded-lg bg-cloud p-4 sm:min-w-0">
+              <div className="grid gap-3 min-[430px]:grid-cols-[1fr_auto] min-[430px]:items-center">
+                <p className="text-lg font-black leading-tight text-navy sm:text-xl">{milestone.title}</p>
                 <StatusBadge status={milestone.status} />
               </div>
               <div className="mt-4 h-2 rounded-full bg-white">
@@ -125,19 +127,19 @@ function MiniDashboard() {
             </div>
           ))}
         </div>
-        <div className="rounded-lg border border-slate-200 bg-white p-4">
-          <div className="flex items-center justify-between gap-3">
-            <p className="font-black text-navy">Change impact review</p>
-            <span className="rounded-full bg-purple/10 px-3 py-1 text-xs font-black text-purple">$4,800</span>
+        <div className="rounded-lg border border-slate-200 bg-white p-4 sm:p-5">
+          <div className="grid gap-3 min-[430px]:grid-cols-[1fr_auto] min-[430px]:items-center">
+            <p className="text-xl font-black leading-tight text-navy sm:text-2xl">Change impact review</p>
+            <span className="w-fit rounded-full bg-purple/10 px-3 py-1 text-xs font-black text-purple">$4,800</span>
           </div>
-          <p className="mt-3 text-sm font-semibold leading-6 text-slate-600">
+          <p className="mt-3 text-sm font-semibold leading-6 text-slate-600 sm:text-base sm:leading-7">
             Contractor requested 5 extra days for API changes. Client approval required before budget and due date update.
           </p>
           <div className="mt-5 grid gap-2 sm:grid-cols-2">
-            <span className="rounded-lg bg-cloud px-3 py-2 text-sm font-black text-navy">+5 days</span>
-            <span className="rounded-lg bg-cloud px-3 py-2 text-sm font-black text-navy">Awaiting client</span>
+            <span className="rounded-lg bg-cloud px-3 py-2 text-sm font-black text-navy sm:text-base">+5 days</span>
+            <span className="rounded-lg bg-cloud px-3 py-2 text-sm font-black text-navy sm:text-base">Awaiting client</span>
           </div>
-          <div className="mt-5 rounded-lg bg-emerald/10 p-3 text-sm font-black text-emerald">
+          <div className="mt-5 rounded-lg bg-emerald/10 p-3 text-sm font-black text-emerald sm:text-base">
             Audit log ready
           </div>
         </div>
