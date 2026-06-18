@@ -109,7 +109,7 @@ export default function SolutionsPage() {
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-5 sm:py-16 lg:grid-cols-[0.95fr_1.05fr] lg:px-8 lg:py-20">
           <div>
             <p className="text-sm font-black uppercase tracking-wide text-purple">Solutions</p>
-            <h1 className="mt-3 max-w-3xl text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="mt-3 max-w-3xl text-3xl font-black tracking-tight sm:text-5xl lg:text-6xl">
               Contract assurance for work where money, time, and trust matter.
             </h1>
             <p className="mt-5 max-w-2xl text-base font-semibold leading-7 text-slate-600 sm:text-lg sm:leading-8">
@@ -130,13 +130,13 @@ export default function SolutionsPage() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-sm font-black text-white/60">Protected operating layer</p>
-                  <p className="mt-2 text-3xl font-black">Agreement Command Center</p>
+                  <p className="mt-2 text-2xl font-black leading-tight sm:text-3xl">Agreement Command Center</p>
                 </div>
                 <ShieldCheck className="text-emerald" size={34} />
               </div>
-              <div className="mobile-scrollbar -mx-5 mt-6 flex snap-x gap-3 overflow-x-auto px-5 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0">
+              <div className="mobile-scrollbar mt-6 flex snap-x gap-3 overflow-x-auto pb-2 sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0">
                 {protectionLayers.map(([title, text]) => (
-                  <div key={title} className="min-w-[230px] snap-start rounded-lg bg-white/10 p-4 sm:min-w-0">
+                  <div key={title} className="min-w-[82%] snap-start rounded-lg bg-white/10 p-4 min-[480px]:min-w-[240px] sm:min-w-0">
                     <p className="font-black">{title}</p>
                     <p className="mt-2 text-sm font-semibold leading-6 text-white/68">{text}</p>
                   </div>
@@ -150,11 +150,11 @@ export default function SolutionsPage() {
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-5 sm:py-16 lg:px-8">
         <div className="max-w-3xl">
           <p className="text-sm font-black uppercase tracking-wide text-purple">Use cases</p>
-          <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Choose the category, then Pactora adapts the assurance workflow.</h2>
+          <h2 className="mt-3 text-2xl font-black tracking-tight sm:text-4xl">Choose the category, then Pactora adapts the assurance workflow.</h2>
         </div>
-        <div className="mobile-scrollbar -mx-4 mt-10 flex snap-x gap-4 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 xl:grid-cols-4">
+        <div className="mobile-scrollbar mt-8 flex snap-x gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-2 md:overflow-visible md:pb-0 lg:mt-10 xl:grid-cols-4">
           {solutions.map((solution) => (
-            <article key={solution.title} className="group min-w-[275px] snap-start rounded-lg border border-slate-200 bg-white p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-glow md:min-w-0">
+            <article key={solution.title} className="group min-w-[84%] snap-start rounded-lg border border-slate-200 bg-white p-5 shadow-soft transition hover:-translate-y-1 hover:shadow-glow min-[480px]:min-w-[290px] md:min-w-0">
               <span className="grid h-11 w-11 place-items-center rounded-lg bg-purple/10 text-purple transition group-hover:bg-purple group-hover:text-white">
                 <solution.icon size={21} />
               </span>
@@ -176,11 +176,11 @@ export default function SolutionsPage() {
         <div className="mx-auto max-w-7xl">
           <div className="max-w-3xl">
             <p className="text-sm font-black uppercase tracking-wide text-emerald">Workflow</p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">From contract to closeout, every major action becomes traceable.</h2>
+            <h2 className="mt-3 text-2xl font-black tracking-tight sm:text-4xl">From contract to closeout, every major action becomes traceable.</h2>
           </div>
-          <div className="mobile-scrollbar -mx-4 mt-10 flex snap-x gap-4 overflow-x-auto px-4 lg:mx-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-0">
+          <div className="mobile-scrollbar mt-8 flex snap-x gap-4 overflow-x-auto pb-2 lg:grid lg:grid-cols-4 lg:overflow-visible lg:pb-0">
             {workflow.map((step, index) => (
-              <article key={step.title} className="min-w-[275px] snap-start rounded-lg border border-white/10 bg-white/5 p-5 lg:min-w-0">
+              <article key={step.title} className="min-w-[84%] snap-start rounded-lg border border-white/10 bg-white/5 p-5 min-[480px]:min-w-[290px] lg:min-w-0">
                 <div className="flex items-center justify-between gap-4">
                   <span className="grid h-11 w-11 place-items-center rounded-lg bg-white/10 text-emerald">
                     <step.icon size={20} />
@@ -199,19 +199,19 @@ export default function SolutionsPage() {
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <div>
             <p className="text-sm font-black uppercase tracking-wide text-purple">For both sides</p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight">Clients and contractors get a shared source of truth.</h2>
+            <h2 className="mt-3 text-2xl font-black tracking-tight sm:text-3xl">Clients and contractors get a shared source of truth.</h2>
             <p className="mt-4 text-sm font-semibold leading-7 text-slate-600">
               Clients get approval control and protected visibility. Contractors get clearer scope, better evidence records, and fewer payment disputes.
             </p>
           </div>
-          <div className="mobile-scrollbar -mx-4 flex snap-x gap-4 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0">
+          <div className="mobile-scrollbar flex snap-x gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0">
             {[
               ["Client view", "Create projects, invite contractors, approve milestones, govern changes, review trust signals."],
               ["Contractor view", "Accept projects, submit work, request extensions, respond to changes, upload evidence."],
               ["Admin view", "Verify companies, review disputes, freeze projects, inspect audit logs, delegate staff access."],
               ["Payment view", "Track project cost, held value, released value, and payment readiness without adding Stripe yet."]
             ].map(([title, text]) => (
-              <div key={title} className="min-w-[270px] snap-start rounded-lg border border-slate-200 bg-white p-5 shadow-soft sm:min-w-0">
+              <div key={title} className="min-w-[84%] snap-start rounded-lg border border-slate-200 bg-white p-5 shadow-soft min-[480px]:min-w-[285px] sm:min-w-0">
                 <div className="flex items-center justify-between gap-3">
                   <p className="font-black">{title}</p>
                   <ArrowRight className="text-purple" size={18} />
@@ -227,7 +227,7 @@ export default function SolutionsPage() {
         <div className="grid gap-5 rounded-lg border border-slate-200 bg-white p-5 shadow-soft sm:p-6 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
             <p className="text-sm font-black uppercase tracking-wide text-purple">Private beta</p>
-            <h2 className="mt-2 text-3xl font-black tracking-tight">See Pactora on your actual contract flow.</h2>
+            <h2 className="mt-2 text-2xl font-black tracking-tight sm:text-3xl">See Pactora on your actual contract flow.</h2>
             <p className="mt-3 text-sm font-semibold leading-6 text-slate-600">
               Bring one project example and we will show how milestones, changes, messages, documents, trust, and payment readiness fit together.
             </p>

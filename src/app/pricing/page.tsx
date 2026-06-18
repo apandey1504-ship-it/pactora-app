@@ -40,7 +40,7 @@ export default function PricingPage() {
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-5 sm:py-16 lg:grid-cols-[0.95fr_1.05fr] lg:px-8 lg:py-20">
           <div>
             <p className="text-sm font-black uppercase tracking-wide text-purple">Pricing</p>
-            <h1 className="mt-3 max-w-3xl text-4xl font-black tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="mt-3 max-w-3xl text-3xl font-black tracking-tight sm:text-5xl lg:text-6xl">
               Beta pricing for agreements that need protection.
             </h1>
             <p className="mt-5 max-w-2xl text-base font-semibold leading-7 text-slate-600 sm:text-lg sm:leading-8">
@@ -56,9 +56,9 @@ export default function PricingPage() {
             </div>
           </div>
           <div className="rounded-lg border border-slate-200 bg-cloud p-4 shadow-soft sm:p-5">
-            <div className="mobile-scrollbar -mx-4 flex snap-x gap-3 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-1">
+            <div className="mobile-scrollbar flex snap-x gap-3 overflow-x-auto pb-2 sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-1">
             {heroSignals.map((signal) => (
-              <div key={signal.label} className="flex min-w-[255px] snap-start items-center justify-between gap-4 rounded-lg bg-white p-4 sm:min-w-0">
+              <div key={signal.label} className="flex min-w-[82%] snap-start items-center justify-between gap-4 rounded-lg bg-white p-4 min-[480px]:min-w-[255px] sm:min-w-0">
                 <div className="flex items-center gap-3">
                   <span className="grid h-10 w-10 place-items-center rounded-lg bg-purple/10 text-purple">
                     <signal.icon size={19} />
@@ -74,9 +74,9 @@ export default function PricingPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-5 sm:py-16 lg:px-8">
-        <div className="mobile-scrollbar -mx-4 flex snap-x gap-4 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 xl:grid-cols-4">
+        <div className="mobile-scrollbar flex snap-x gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-2 md:overflow-visible md:pb-0 xl:grid-cols-4">
           {pricingPlans.map((plan) => (
-            <div key={plan.name} className="min-w-[280px] snap-start md:min-w-0">
+            <div key={plan.name} className="min-w-[86%] snap-start min-[480px]:min-w-[300px] md:min-w-0">
             <PricingCard
               {...plan}
               featured={plan.name === "Business"}
@@ -93,7 +93,7 @@ export default function PricingPage() {
         <section className="mt-10 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-soft">
           <div className="border-b border-slate-200 p-5 sm:p-6">
             <p className="text-sm font-black uppercase tracking-wide text-purple">Compare plans</p>
-            <h2 className="mt-2 text-3xl font-black tracking-tight">Pick the operating layer that matches your risk.</h2>
+            <h2 className="mt-2 text-2xl font-black tracking-tight sm:text-3xl">Pick the operating layer that matches your risk.</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-left text-sm">
