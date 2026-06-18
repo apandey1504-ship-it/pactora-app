@@ -72,8 +72,6 @@ const solutionCards = [
   { title: "Procurement and vendors", icon: Banknote, text: "Vendor trust, purchase milestones, documentation, payment release coordination." }
 ];
 
-const integrations = ["Supabase", "Resend", "DocuSign ready", "Plaid planned", "Stripe planned", "Vercel", "Audit exports", "Storage vault"];
-
 const faqs = [
   ["Is Pactora an escrow service?", "No. Pactora provides contract assurance workflows and payment-readiness tracking. Payment processing is handled by third-party providers."],
   ["Can both clients and contractors use it?", "Yes. Clients manage approvals and protected value. Contractors submit work, evidence, changes, extensions, and messages."],
@@ -247,25 +245,6 @@ export default function LandingPage() {
                   Explore workflow <ArrowRight size={16} />
                 </span>
               </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
-        <div className="grid gap-8 rounded-lg border border-slate-200 bg-white p-5 shadow-soft sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <div>
-            <p className="text-sm font-black uppercase tracking-wide text-purple">Fits your stack</p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Designed to connect with the tools businesses already trust.</h2>
-            <p className="mt-4 text-sm font-semibold leading-7 text-slate-600">
-              Pactora is backend-ready for authentication, notifications, storage, signatures, verification, and future payment-provider workflows.
-            </p>
-          </div>
-          <div className="mobile-scrollbar flex snap-x gap-3 overflow-x-auto pb-2 sm:grid sm:grid-cols-4 sm:overflow-visible sm:pb-0">
-            {integrations.map((item) => (
-              <div key={item} className="min-w-[135px] snap-start rounded-lg bg-cloud px-4 py-5 text-center text-sm font-black text-navy transition hover:-translate-y-1 hover:bg-purple hover:text-white sm:min-w-0">
-                {item}
-              </div>
             ))}
           </div>
         </div>
