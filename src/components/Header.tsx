@@ -14,7 +14,14 @@ export function Header() {
         </div>
         <nav className="hidden items-center gap-7 text-sm font-semibold text-slate-600 lg:flex">
           {navItems.map((item) => {
-            const href = item === "Pricing" ? "/pricing" : `/#${item.toLowerCase()}`;
+            const href =
+              item === "Solutions"
+                ? "/solutions"
+                : item === "Pricing"
+                  ? "/pricing"
+                  : item === "Resources"
+                    ? "/faq"
+                    : `/#${item.toLowerCase()}`;
 
             return (
               <Link key={item} href={href} className="transition hover:text-navy">

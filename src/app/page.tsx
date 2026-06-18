@@ -1,12 +1,10 @@
 import Link from "next/link";
 import { Archive, BadgeCheck, Clock3, FileCheck2, GitPullRequest, MessageSquareWarning, ShieldCheck, Sparkles, WalletCards } from "lucide-react";
 import { Header } from "@/components/Header";
-import { PricingCard } from "@/components/PricingCard";
 import { PublicFooter } from "@/components/PublicFooter";
 import { StatusBadge } from "@/components/StatusBadge";
 import { TrustScoreBadge } from "@/components/TrustScoreBadge";
 import { changeRequests, milestones, projects, trustSignals } from "@/lib/mock-data";
-import { pricingPlans } from "@/lib/pricing";
 
 const features = [
   { icon: FileCheck2, title: "Contract Assurance", text: "Centralize agreements, documents, acceptance criteria, and approval history." },
@@ -132,31 +130,50 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
-      <section id="solutions" className="bg-navy px-5 py-20 text-white lg:px-8">
+      <section id="solutions" className="bg-navy px-4 py-14 text-white sm:px-5 sm:py-20 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <p className="text-sm font-black uppercase tracking-wide text-emerald">How it works</p>
+          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+            <div>
+              <p className="text-sm font-black uppercase tracking-wide text-emerald">How it works</p>
+              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">A shared source of truth for protected project work.</h2>
+              <p className="mt-4 max-w-2xl text-sm font-semibold leading-7 text-white/70">
+                Pactora turns contracts, milestones, scope changes, payment readiness, and trust signals into one auditable workflow.
+              </p>
+            </div>
+            <Link href="/solutions" className="rounded-lg bg-white px-5 py-3.5 text-center font-black text-navy lg:justify-self-end">
+              Explore solutions
+            </Link>
+          </div>
           <div className="mt-8 grid gap-5 md:grid-cols-3">
             {["Create a protected project", "Manage milestones and changes", "Approve work with confidence"].map((step, index) => (
-              <article key={step} className="rounded-lg border border-white/10 bg-white/5 p-6">
+              <Link key={step} href="/solutions" className="rounded-lg border border-white/10 bg-white/5 p-6 transition hover:-translate-y-1 hover:bg-white/10">
                 <p className="text-5xl font-black text-white/18">0{index + 1}</p>
                 <h3 className="mt-5 text-xl font-black">{step}</h3>
                 <p className="mt-3 text-sm font-medium leading-6 text-white/66">
                   Pactora records decisions, evidence, messages, and trust signals throughout the project lifecycle.
                 </p>
-              </article>
+              </Link>
             ))}
           </div>
         </div>
       </section>
       <section id="pricing" className="mx-auto max-w-7xl px-4 py-14 sm:px-5 sm:py-20 lg:px-8">
-        <div className="max-w-2xl">
-          <p className="text-sm font-black uppercase tracking-wide text-purple">Pricing</p>
-          <h2 className="mt-3 text-4xl font-black tracking-tight">Plans for every agreement volume.</h2>
-        </div>
-        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {pricingPlans.map((plan) => (
-            <PricingCard key={plan.name} {...plan} featured={plan.name === "Business"} />
-          ))}
+        <div className="grid gap-6 rounded-lg border border-slate-200 bg-white p-5 shadow-soft sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div>
+            <p className="text-sm font-black uppercase tracking-wide text-purple">Pricing</p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Simple private-beta pricing for protected agreements.</h2>
+            <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-slate-600">
+              Start free, upgrade when you need more active projects, advanced change governance, verification, audit controls, and lower platform fees.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:flex sm:flex-wrap lg:justify-end">
+            <Link href="/pricing" className="rounded-lg bg-purple px-5 py-3.5 text-center font-black text-white shadow-glow">
+              View pricing
+            </Link>
+            <Link href="/checkout?plan=starter" className="rounded-lg bg-cloud px-5 py-3.5 text-center font-black text-navy ring-1 ring-slate-200">
+              Start free
+            </Link>
+          </div>
         </div>
       </section>
       <PublicFooter />
