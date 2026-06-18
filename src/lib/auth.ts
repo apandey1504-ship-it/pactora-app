@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { getPricingPlan } from "@/lib/pricing";
 import type { Profile, UserRole } from "@/types/database";
 
 export type SignupInput = {
@@ -9,6 +10,7 @@ export type SignupInput = {
   phone?: string;
   countryCode?: string;
   country?: string;
+  planSlug?: string;
 };
 
 function getAuthErrorMessage(error: unknown) {
@@ -43,9 +45,9 @@ function isMissingWorkspaceTableError(error: unknown) {
   return (message.includes("public.companies") || message.includes("public.company_members")) && message.includes("schema cache");
 }
 
-async function ensureDefaultWorkspace(profile: Profile) {
+async function ensureDefaultWorkspace(profile: Profile, planSlug = "starter") {
   if (!supabase) {
-    return;
+    return null;
   }
 
   const { data: membership, error: membershipError } = await supabase
@@ -57,13 +59,13 @@ async function ensureDefaultWorkspace(profile: Profile) {
 
   if (membershipError) {
     if (isMissingWorkspaceTableError(membershipError)) {
-      return;
+      return null;
     }
-    return;
+    return null;
   }
 
   if (membership) {
-    return;
+    return null;
   }
 
   const companyName =
@@ -91,9 +93,9 @@ async function ensureDefaultWorkspace(profile: Profile) {
 
   if (companyError) {
     if (isMissingWorkspaceTableError(companyError)) {
-      return;
+      return null;
     }
-    return;
+    return null;
   }
 
   const { error: memberError } = await supabase.from("company_members").insert([
@@ -106,10 +108,40 @@ async function ensureDefaultWorkspace(profile: Profile) {
 
   if (memberError) {
     if (isMissingWorkspaceTableError(memberError)) {
-      return;
+      return company.id;
     }
+    return company.id;
+  }
+
+  await ensureDefaultSubscription(company.id, planSlug);
+  return company.id;
+}
+
+async function ensureDefaultSubscription(companyId: string, planSlug = "starter") {
+  if (!supabase) {
     return;
   }
+
+  const plan = getPricingPlan(planSlug);
+  const { data: planRow, error: planError } = await supabase
+    .from("plans")
+    .select("id")
+    .eq("id", plan.slug)
+    .maybeSingle();
+
+  if (planError || !planRow) {
+    return;
+  }
+
+  await supabase.from("subscriptions").upsert(
+    {
+      company_id: companyId,
+      plan_id: planRow.id,
+      status: plan.slug === "enterprise" ? "sales_required" : "active",
+      started_at: new Date().toISOString()
+    },
+    { onConflict: "company_id" }
+  );
 }
 
 function getMissingProfilesTableMessage() {
@@ -208,7 +240,7 @@ export async function getAuthProfile(): Promise<Profile | null> {
     throw insertError;
   }
 
-  await ensureDefaultWorkspace(insertedProfile);
+  await ensureDefaultWorkspace(insertedProfile, (user.user_metadata?.plan_slug as string | undefined) ?? "starter");
   return insertedProfile;
 }
 
@@ -226,7 +258,8 @@ export async function signUpWithProfile(input: SignupInput) {
         full_name: input.fullName,
         role: input.role,
         country_code: input.countryCode,
-        country: input.country
+        country: input.country,
+        plan_slug: input.planSlug ?? "starter"
       }
     }
   });
@@ -263,7 +296,7 @@ export async function signUpWithProfile(input: SignupInput) {
       kyc_status: "unverified",
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
-    });
+    }, input.planSlug ?? "starter");
   }
 
   return data;

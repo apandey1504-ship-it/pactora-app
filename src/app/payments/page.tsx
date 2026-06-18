@@ -39,7 +39,7 @@ export default function PaymentsPage() {
   return (
     <DashboardShell
       title="Payments"
-      subtitle="Placeholder for payment holds, release readiness, and future payment provider integrations."
+      subtitle="Pactora Secure Milestone Payments™ workflow, release readiness, and future payment partner integrations."
       action={<div className="flex flex-wrap items-center gap-3"><DataSourceBadge source={source} loading={loading} /><button className="inline-flex items-center gap-2 rounded-lg bg-navy px-4 py-3 text-sm font-black text-white"><LockKeyhole size={17} /> Payments disabled</button></div>}
     >
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -49,9 +49,20 @@ export default function PaymentsPage() {
       </div>
       <section className="mt-6 rounded-lg border border-slate-200 bg-white p-8 shadow-soft">
         <CreditCard className="text-purple" size={34} />
-        <h2 className="mt-5 text-3xl font-black tracking-tight text-navy">Payment rails are not integrated yet.</h2>
+        <h2 className="mt-5 text-3xl font-black tracking-tight text-navy">Payment partner rails are not integrated yet.</h2>
         <p className="mt-3 max-w-2xl font-medium leading-7 text-slate-600">
-          Pactora is structured to connect payment status to milestone approvals later. For now, this page shows release readiness without moving money.
+          Pactora is structured to connect payment status to milestone approvals later through Stripe Connect or a similar provider. For now, this page shows release readiness without moving money.
+        </p>
+        <div className="mt-6 grid gap-3 md:grid-cols-4">
+          {["Client funds milestone through partner", "Contractor completes work", "Client approves milestone", "Release is triggered and audited"].map((step, index) => (
+            <div key={step} className="rounded-lg bg-cloud p-4">
+              <p className="text-xs font-black uppercase tracking-wide text-purple">Step {index + 1}</p>
+              <p className="mt-2 text-sm font-black text-navy">{step}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-5 text-xs font-semibold leading-6 text-slate-500">
+          Pactora coordinates approval workflow and documentation. Funds are processed through trusted payment partners; Pactora does not directly hold customer funds in the MVP.
         </p>
       </section>
       <div className="mt-6 grid gap-4 md:grid-cols-2">

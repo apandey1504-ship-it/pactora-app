@@ -167,6 +167,27 @@ create table if not exists public.company_members (
   unique (company_id, user_id)
 );
 
+create table if not exists public.plans (
+  id text primary key,
+  name text not null,
+  monthly_price numeric(10, 2),
+  transaction_fee_percent numeric(5, 2),
+  features jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.subscriptions (
+  id uuid primary key default gen_random_uuid(),
+  company_id uuid not null references public.companies(id) on delete cascade,
+  plan_id text not null references public.plans(id),
+  status text not null default 'active',
+  started_at timestamptz not null default now(),
+  ends_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (company_id)
+);
+
 create table if not exists public.projects (
   id uuid primary key default gen_random_uuid(),
   client_company_id uuid not null references public.companies(id),
@@ -264,8 +285,34 @@ create table if not exists public.payments (
   status public.payment_status not null default 'pending',
   provider text,
   provider_payment_id text,
+  platform_fee_amount numeric(14, 2) not null default 0,
+  payment_provider_fee_amount numeric(14, 2),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
+);
+
+alter table public.payments add column if not exists platform_fee_amount numeric(14, 2) not null default 0;
+alter table public.payments add column if not exists payment_provider_fee_amount numeric(14, 2);
+
+create table if not exists public.platform_fees (
+  id uuid primary key default gen_random_uuid(),
+  project_id uuid not null references public.projects(id) on delete cascade,
+  milestone_id uuid references public.milestones(id) on delete set null,
+  company_id uuid not null references public.companies(id) on delete cascade,
+  amount numeric(14, 2) not null default 0,
+  fee_percent numeric(5, 2) not null default 0,
+  payment_provider_fee_amount numeric(14, 2),
+  status text not null default 'estimated',
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.payment_provider_events (
+  id uuid primary key default gen_random_uuid(),
+  provider text not null,
+  event_type text not null,
+  provider_event_id text,
+  payload jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
 );
 
 create table if not exists public.disputes (
@@ -322,6 +369,10 @@ create index if not exists company_members_company_id_idx on public.company_memb
 create index if not exists company_members_user_id_idx on public.company_members(user_id);
 create index if not exists company_members_role_idx on public.company_members(role);
 
+create index if not exists subscriptions_company_id_idx on public.subscriptions(company_id);
+create index if not exists subscriptions_plan_id_idx on public.subscriptions(plan_id);
+create index if not exists subscriptions_status_idx on public.subscriptions(status);
+
 create index if not exists projects_client_company_id_idx on public.projects(client_company_id);
 create index if not exists projects_contractor_company_id_idx on public.projects(contractor_company_id);
 create index if not exists projects_created_by_idx on public.projects(created_by);
@@ -356,6 +407,15 @@ create index if not exists payments_payer_company_id_idx on public.payments(paye
 create index if not exists payments_payee_company_id_idx on public.payments(payee_company_id);
 create index if not exists payments_status_idx on public.payments(status);
 
+create index if not exists platform_fees_project_id_idx on public.platform_fees(project_id);
+create index if not exists platform_fees_milestone_id_idx on public.platform_fees(milestone_id);
+create index if not exists platform_fees_company_id_idx on public.platform_fees(company_id);
+create index if not exists platform_fees_status_idx on public.platform_fees(status);
+
+create index if not exists payment_provider_events_provider_idx on public.payment_provider_events(provider);
+create index if not exists payment_provider_events_event_type_idx on public.payment_provider_events(event_type);
+create index if not exists payment_provider_events_provider_event_id_idx on public.payment_provider_events(provider_event_id);
+
 create index if not exists disputes_project_id_idx on public.disputes(project_id);
 create index if not exists disputes_milestone_id_idx on public.disputes(milestone_id);
 create index if not exists disputes_raised_by_idx on public.disputes(raised_by);
@@ -380,6 +440,11 @@ for each row execute function public.update_updated_at_column();
 drop trigger if exists companies_updated_at on public.companies;
 create trigger companies_updated_at
 before update on public.companies
+for each row execute function public.update_updated_at_column();
+
+drop trigger if exists subscriptions_updated_at on public.subscriptions;
+create trigger subscriptions_updated_at
+before update on public.subscriptions
 for each row execute function public.update_updated_at_column();
 
 drop trigger if exists projects_updated_at on public.projects;
@@ -411,6 +476,18 @@ drop trigger if exists trust_scores_updated_at on public.trust_scores;
 create trigger trust_scores_updated_at
 before update on public.trust_scores
 for each row execute function public.update_updated_at_column();
+
+insert into public.plans (id, name, monthly_price, transaction_fee_percent, features)
+values
+  ('starter', 'Starter', 0, 3, '["1 active project", "Basic milestone tracking", "Basic change requests", "Basic messaging", "500 MB document storage", "Pactora Secure Milestone Payments available", "Standard support"]'::jsonb),
+  ('pro', 'Pro', 49, 3, '["Up to 10 active projects", "Unlimited milestones", "Change Governance Engine™", "Audit trail", "5 GB document storage", "Email notifications", "Pactora Secure Milestone Payments"]'::jsonb),
+  ('business', 'Business', 199, 2, '["Unlimited active projects", "Team members", "Advanced Change Governance Engine™", "Business verification badge", "Advanced audit trail", "50 GB document storage", "Admin controls", "Dispute documentation center"]'::jsonb),
+  ('enterprise', 'Enterprise', null, null, '["Custom workflows", "API access", "Dedicated success manager", "Custom verification workflows", "Custom reporting", "Advanced permissions", "SSO-ready architecture", "Volume pricing"]'::jsonb)
+on conflict (id) do update set
+  name = excluded.name,
+  monthly_price = excluded.monthly_price,
+  transaction_fee_percent = excluded.transaction_fee_percent,
+  features = excluded.features;
 
 create or replace function public.calculate_basic_trust_score(company_id uuid)
 returns integer

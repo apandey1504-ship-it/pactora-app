@@ -108,6 +108,50 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["company_members"]["Insert"]>;
         Relationships: [];
       };
+      plans: {
+        Row: {
+          id: string;
+          name: string;
+          monthly_price: number | null;
+          transaction_fee_percent: number | null;
+          features: Json;
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+          name: string;
+          monthly_price?: number | null;
+          transaction_fee_percent?: number | null;
+          features?: Json;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["plans"]["Insert"]>;
+        Relationships: [];
+      };
+      subscriptions: {
+        Row: {
+          id: string;
+          company_id: string;
+          plan_id: string;
+          status: string;
+          started_at: string;
+          ends_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          company_id: string;
+          plan_id: string;
+          status?: string;
+          started_at?: string;
+          ends_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["subscriptions"]["Insert"]>;
+        Relationships: [];
+      };
       projects: {
         Row: {
           id: string;
@@ -304,6 +348,8 @@ export type Database = {
           status: PaymentStatus;
           provider: string | null;
           provider_payment_id: string | null;
+          platform_fee_amount: number;
+          payment_provider_fee_amount: number | null;
           created_at: string;
           updated_at: string;
         };
@@ -318,10 +364,58 @@ export type Database = {
           status?: PaymentStatus;
           provider?: string | null;
           provider_payment_id?: string | null;
+          platform_fee_amount?: number;
+          payment_provider_fee_amount?: number | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["payments"]["Insert"]>;
+        Relationships: [];
+      };
+      platform_fees: {
+        Row: {
+          id: string;
+          project_id: string;
+          milestone_id: string | null;
+          company_id: string;
+          amount: number;
+          fee_percent: number;
+          payment_provider_fee_amount: number | null;
+          status: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          project_id: string;
+          milestone_id?: string | null;
+          company_id: string;
+          amount?: number;
+          fee_percent?: number;
+          payment_provider_fee_amount?: number | null;
+          status?: string;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["platform_fees"]["Insert"]>;
+        Relationships: [];
+      };
+      payment_provider_events: {
+        Row: {
+          id: string;
+          provider: string;
+          event_type: string;
+          provider_event_id: string | null;
+          payload: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          provider: string;
+          event_type: string;
+          provider_event_id?: string | null;
+          payload?: Json;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["payment_provider_events"]["Insert"]>;
         Relationships: [];
       };
       disputes: {

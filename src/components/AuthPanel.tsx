@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getAuthProfile, getDashboardPathForRole, loginWithPassword, signUpWithProfile } from "@/lib/auth";
+import { getPricingPlan, pricingPlans } from "@/lib/pricing";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import type { UserRole } from "@/types/database";
 import { Logo } from "./Logo";
@@ -33,7 +34,11 @@ export function AuthPanel({
 }) {
   const isSignup = mode === "signup";
   const router = useRouter();
+  const initialPlan = getPricingPlan(
+    typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("plan")
+  );
   const [role, setRole] = useState<UserRole>(lockedRole ?? defaultRole);
+  const [planSlug, setPlanSlug] = useState(initialPlan.slug);
   const [countryCode, setCountryCode] = useState("+1");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -55,7 +60,8 @@ export function AuthPanel({
           phone: String(form.get("phone") ?? ""),
           countryCode,
           country: String(form.get("country") ?? "US"),
-          role
+          role,
+          planSlug
         });
         setMessage("Account created. If email confirmation is enabled, confirm your email before logging in.");
         router.push(getDashboardPathForRole(role));
@@ -139,6 +145,21 @@ export function AuthPanel({
                     </select>
                   </label>
                 )}
+                <label className="block">
+                  <span className="text-sm font-bold text-navy">Plan</span>
+                  <select
+                    value={planSlug}
+                    onChange={(event) => setPlanSlug(event.target.value as typeof planSlug)}
+                    className="mt-2 w-full rounded-lg border border-slate-200 px-4 py-3 outline-none focus:border-purple focus:ring-4 focus:ring-purple/10"
+                  >
+                    {pricingPlans.map((plan) => (
+                      <option key={plan.slug} value={plan.slug}>{plan.name} · {plan.price}</option>
+                    ))}
+                  </select>
+                  <Link href={`/checkout?plan=${planSlug}&role=${lockedRole ?? role}`} className="mt-2 inline-flex text-xs font-black text-purple">
+                    View checkout and payment fees
+                  </Link>
+                </label>
               </>
             ) : null}
             <label className="block">

@@ -61,6 +61,8 @@ $$;
 alter table public.profiles enable row level security;
 alter table public.companies enable row level security;
 alter table public.company_members enable row level security;
+alter table public.plans enable row level security;
+alter table public.subscriptions enable row level security;
 alter table public.projects enable row level security;
 alter table public.project_participants enable row level security;
 alter table public.milestones enable row level security;
@@ -69,6 +71,8 @@ alter table public.change_request_comments enable row level security;
 alter table public.messages enable row level security;
 alter table public.documents enable row level security;
 alter table public.payments enable row level security;
+alter table public.platform_fees enable row level security;
+alter table public.payment_provider_events enable row level security;
 alter table public.disputes enable row level security;
 alter table public.trust_scores enable row level security;
 alter table public.audit_logs enable row level security;
@@ -121,6 +125,33 @@ create policy "company_members_update_admin"
 on public.company_members for update
 using (public.is_admin())
 with check (public.is_admin());
+
+drop policy if exists "plans_select_authenticated" on public.plans;
+create policy "plans_select_authenticated"
+on public.plans for select
+using (auth.uid() is not null or true);
+
+drop policy if exists "plans_write_admin" on public.plans;
+create policy "plans_write_admin"
+on public.plans for all
+using (public.is_admin())
+with check (public.is_admin());
+
+drop policy if exists "subscriptions_select_company_member_or_admin" on public.subscriptions;
+create policy "subscriptions_select_company_member_or_admin"
+on public.subscriptions for select
+using (public.is_company_member(company_id) or public.is_admin());
+
+drop policy if exists "subscriptions_insert_company_member_or_admin" on public.subscriptions;
+create policy "subscriptions_insert_company_member_or_admin"
+on public.subscriptions for insert
+with check (public.is_company_member(company_id) or public.is_admin());
+
+drop policy if exists "subscriptions_update_company_member_or_admin" on public.subscriptions;
+create policy "subscriptions_update_company_member_or_admin"
+on public.subscriptions for update
+using (public.is_company_member(company_id) or public.is_admin())
+with check (public.is_company_member(company_id) or public.is_admin());
 
 drop policy if exists "projects_select_participant_or_admin" on public.projects;
 create policy "projects_select_participant_or_admin"
@@ -240,6 +271,28 @@ create policy "payments_update_project_participant_or_admin"
 on public.payments for update
 using (public.is_project_participant(project_id) or public.is_admin())
 with check (public.is_project_participant(project_id) or public.is_admin());
+
+drop policy if exists "platform_fees_select_project_participant_or_admin" on public.platform_fees;
+create policy "platform_fees_select_project_participant_or_admin"
+on public.platform_fees for select
+using (public.is_project_participant(project_id) or public.is_admin());
+
+drop policy if exists "platform_fees_write_admin" on public.platform_fees;
+create policy "platform_fees_write_admin"
+on public.platform_fees for all
+using (public.is_admin())
+with check (public.is_admin());
+
+drop policy if exists "payment_provider_events_select_admin" on public.payment_provider_events;
+create policy "payment_provider_events_select_admin"
+on public.payment_provider_events for select
+using (public.is_admin());
+
+drop policy if exists "payment_provider_events_write_admin" on public.payment_provider_events;
+create policy "payment_provider_events_write_admin"
+on public.payment_provider_events for all
+using (public.is_admin())
+with check (public.is_admin());
 
 drop policy if exists "disputes_select_project_participant_or_admin" on public.disputes;
 create policy "disputes_select_project_participant_or_admin"

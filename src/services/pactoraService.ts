@@ -1,6 +1,7 @@
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { formatCurrency, formatDate, formatTime, normalizeStatus } from "@/lib/format";
 import { mockUser } from "@/lib/mock-data";
+import { getPricingPlan } from "@/lib/pricing";
 import { supabase } from "@/lib/supabase";
 import type { ChangeRequest, Message, Milestone, Project, ProjectDocument, ServiceResult, TrustScore } from "@/types";
 import type { Database, DisputeStatus, MilestoneStatus, ProjectStatus } from "@/types/database";
@@ -18,6 +19,7 @@ export type MessageInsert = Database["public"]["Tables"]["messages"]["Insert"];
 export type DocumentRow = Database["public"]["Tables"]["documents"]["Row"];
 export type DocumentInsert = Database["public"]["Tables"]["documents"]["Insert"];
 export type Payment = Database["public"]["Tables"]["payments"]["Row"];
+export type Subscription = Database["public"]["Tables"]["subscriptions"]["Row"];
 export type Dispute = Database["public"]["Tables"]["disputes"]["Row"];
 export type DisputeInsert = Database["public"]["Tables"]["disputes"]["Insert"];
 export type TrustScoreRow = Database["public"]["Tables"]["trust_scores"]["Row"];
@@ -153,6 +155,54 @@ async function writeAuditLog(input: AuditLogInsert) {
       metadata: input.metadata ?? {}
     }
   ]);
+}
+
+async function getCompanySubscriptionPlan(companyId: string) {
+  const client = requireSupabase();
+
+  if (!client) {
+    return getPricingPlan("starter");
+  }
+
+  const { data, error } = await client
+    .from("subscriptions")
+    .select("plan_id")
+    .eq("company_id", companyId)
+    .maybeSingle();
+
+  if (error || !data) {
+    return getPricingPlan("starter");
+  }
+
+  return getPricingPlan(data.plan_id);
+}
+
+async function enforceProjectLimit(companyId: string) {
+  const client = requireSupabase();
+
+  if (!client) {
+    return;
+  }
+
+  const plan = await getCompanySubscriptionPlan(companyId);
+
+  if (plan.activeProjectLimit === null) {
+    return;
+  }
+
+  const { count, error } = await client
+    .from("projects")
+    .select("id", { count: "exact", head: true })
+    .eq("client_company_id", companyId)
+    .in("status", ["draft", "pending_acceptance", "active", "paused", "disputed"]);
+
+  if (error) {
+    return;
+  }
+
+  if ((count ?? 0) >= plan.activeProjectLimit) {
+    throw new Error(`${plan.name} includes ${plan.activeProjectLimit} active project${plan.activeProjectLimit === 1 ? "" : "s"}. Upgrade your plan to create more protected projects.`);
+  }
 }
 
 async function getProjectNotificationRecipients(projectId: string, excludeUserId?: string) {
@@ -299,6 +349,7 @@ export async function createProject(input: {
 
   const createdBy = input.createdBy ?? mockUser.id;
   const clientCompanyId = input.clientCompanyId ?? await getPrimaryCompanyId(createdBy);
+  await enforceProjectLimit(clientCompanyId);
   const projectId = crypto.randomUUID();
   const payload: ProjectInsert = {
     id: projectId,

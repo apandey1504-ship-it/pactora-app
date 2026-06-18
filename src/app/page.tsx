@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Clock3, FileCheck2, GitPullRequest, ShieldCheck, Sparkles, WalletCards } from "lucide-react";
+import { Archive, ArrowRight, BadgeCheck, Clock3, FileCheck2, GitPullRequest, MessageSquareWarning, ShieldCheck, Sparkles, WalletCards } from "lucide-react";
 import { Header } from "@/components/Header";
 import { PricingCard } from "@/components/PricingCard";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -8,12 +8,14 @@ import { changeRequests, milestones, projects, trustSignals } from "@/lib/mock-d
 import { pricingPlans } from "@/lib/pricing";
 
 const features = [
-  { icon: WalletCards, title: "Cost protected", text: "Track project value, reserve assumptions, unpaid change exposure, and payment readiness." },
-  { icon: Clock3, title: "Time protected", text: "Capture due dates, extension requests, timeline risk, and delay exposure before disputes begin." },
-  { icon: FileCheck2, title: "Agreement control", text: "Centralize contracts, documents, acceptance criteria, and approval history." },
-  { icon: BadgeCheck, title: "Milestone assurance", text: "Track work evidence, approval states, release rules, and payment readiness." },
-  { icon: GitPullRequest, title: "Scope change clarity", text: "Keep cost, timeline, and obligation changes auditable before they become disputes." },
-  { icon: ShieldCheck, title: "Trust scoring", text: "Turn business behavior into confidence signals for clients and contractors." }
+  { icon: FileCheck2, title: "Contract Assurance", text: "Centralize agreements, documents, acceptance criteria, and approval history." },
+  { icon: BadgeCheck, title: "Milestone Management", text: "Track work evidence, approval states, release rules, and payment readiness." },
+  { icon: GitPullRequest, title: "Change Governance Engine™", text: "Keep cost, timeline, and obligation changes auditable before they become disputes." },
+  { icon: WalletCards, title: "Secure Milestone Payments", text: "Coordinate payment funding and release logic through trusted payment partners." },
+  { icon: Clock3, title: "Audit Trail", text: "Record scope, approvals, documents, messages, and status changes across the project." },
+  { icon: MessageSquareWarning, title: "Dispute Documentation", text: "Keep clean evidence and timelines ready when project disagreements need review." },
+  { icon: ShieldCheck, title: "Business Trust Score", text: "Turn business behavior into confidence signals for clients and contractors." },
+  { icon: Archive, title: "Document Vault", text: "Attach contracts, certificates, evidence, invoices, and verification documents." }
 ];
 
 export default function LandingPage() {
@@ -31,7 +33,7 @@ export default function LandingPage() {
               Every Agreement. Protected.
             </h1>
             <p className="mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600">
-              Pactora helps businesses protect project cost, timelines, contracts, milestones, changes, approvals, payments, and trust in one secure platform.
+              Pactora helps businesses manage contracts, milestones, changes, approvals, secure milestone payments, and trust in one connected platform.
             </p>
             <div className="mt-7 grid max-w-xl gap-3 sm:grid-cols-2">
               <div className="rounded-lg border border-slate-200 bg-cloud p-4">
@@ -44,8 +46,8 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="mt-9 flex flex-wrap gap-3">
-              <Link href="/signup" className="rounded-lg bg-purple px-5 py-3.5 font-black text-white shadow-glow">
-                Get Started Free
+              <Link href="/checkout?plan=starter" className="rounded-lg bg-purple px-5 py-3.5 font-black text-white shadow-glow">
+                Start Free
               </Link>
               <Link href="/messages" className="rounded-lg bg-white px-5 py-3.5 font-black text-navy ring-1 ring-slate-200">
                 Book a Demo
@@ -107,7 +109,7 @@ export default function LandingPage() {
       </section>
       <section className="border-y border-slate-200 bg-white px-5 py-6">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-5 text-sm font-black text-slate-500 lg:px-8">
-          {["Trusted by operators", "SOC2-ready workflows", "Escrow-friendly rails", "Business verification", "Dispute prevention"].map((item) => (
+          {["Trusted by operators", "SOC2-ready workflows", "Payment partner ready", "Business verification", "Dispute prevention"].map((item) => (
             <span key={item}>{item}</span>
           ))}
         </div>
@@ -168,6 +170,9 @@ export default function LandingPage() {
             Open dashboard <ArrowRight size={18} />
           </Link>
         </div>
+        <p className="mx-auto mt-6 max-w-7xl text-xs font-semibold leading-6 text-slate-500">
+          Pactora facilitates contract assurance workflows and milestone payment coordination through third-party payment providers. Pactora does not provide legal, banking, escrow, insurance, or financial advisory services unless expressly provided through licensed partners.
+        </p>
       </footer>
     </main>
   );

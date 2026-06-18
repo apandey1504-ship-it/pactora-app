@@ -22,6 +22,10 @@ export default function AdminDashboardPage() {
   const [adminError, setAdminError] = useState<string | null>(null);
   const [auditLogs, setAuditLogs] = useState<AuditLogRow[]>([]);
   const [auditError, setAuditError] = useState<string | null>(null);
+  const fundedVolume = projects.reduce((total, project) => total + Number(project.value.replace(/[^0-9.-]+/g, "")), 0);
+  const estimatedPlatformFees = Math.round(fundedVolume * 0.03);
+  const estimatedMrr = Math.max(companies.length - 1, 0) * 49;
+  const paidPlans = Math.max(companies.length - 1, 0);
   const adminStats = [
     { label: "Users", value: String(users.length), delta: source },
     { label: "Projects", value: String(projects.length), delta: source },
@@ -96,6 +100,30 @@ export default function AdminDashboardPage() {
           <DashboardCard key={stat.label} {...stat} icon={icons[index]} />
         ))}
       </div>
+      <section className="mt-8 rounded-lg border border-slate-200 bg-white p-5 shadow-soft">
+        <div>
+          <p className="text-xs font-black uppercase tracking-wide text-purple">Estimated / Demo Data</p>
+          <h2 className="mt-2 text-lg font-black text-navy">Revenue model</h2>
+        </div>
+        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+          {[
+            { label: "Monthly recurring revenue", value: `$${estimatedMrr.toLocaleString()}` },
+            { label: "Funded milestone volume", value: `$${fundedVolume.toLocaleString()}` },
+            { label: "Estimated platform fees", value: `$${estimatedPlatformFees.toLocaleString()}` },
+            { label: "Active paid plans", value: String(paidPlans) },
+            { label: "Verification revenue", value: "$0" },
+            { label: "Dispute fees", value: "$0" }
+          ].map((item) => (
+            <div key={item.label} className="rounded-lg bg-cloud p-4">
+              <p className="text-xs font-black uppercase tracking-wide text-slate-500">{item.label}</p>
+              <p className="mt-2 text-2xl font-black text-navy">{item.value}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-4 text-sm font-semibold leading-6 text-slate-500">
+          Future revenue streams include monthly subscriptions, platform transaction fees, business verification fees, dispute documentation/review fees, insurance partner commission, trust-score subscriptions, trade assurance fees, and invoice financing referral revenue.
+        </p>
+      </section>
       <section className="mt-8 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-soft">
         <div className="border-b border-slate-100 p-5">
           <h2 className="text-lg font-black text-navy">Admin review queue</h2>
