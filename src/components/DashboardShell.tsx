@@ -2,20 +2,23 @@ import type { ReactNode } from "react";
 import { AuthGuard } from "./AuthGuard";
 import { BetaBanner } from "./BetaBanner";
 import { MobileDashboardNav, Sidebar } from "./Sidebar";
+import type { UserRole } from "@/types/database";
 
 export function DashboardShell({
   title,
   subtitle,
   action,
+  allowedRoles,
   children
 }: {
   title: string;
   subtitle: string;
   action?: ReactNode;
+  allowedRoles?: UserRole[];
   children: ReactNode;
 }) {
   return (
-    <AuthGuard>
+    <AuthGuard allowedRoles={allowedRoles}>
       <div className="min-h-screen bg-cloud">
         <BetaBanner />
         <MobileDashboardNav />

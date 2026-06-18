@@ -286,9 +286,14 @@ using (public.is_admin())
 with check (public.is_admin());
 
 drop policy if exists "audit_logs_select_admin" on public.audit_logs;
-create policy "audit_logs_select_admin"
+drop policy if exists "audit_logs_select_project_participant_or_admin" on public.audit_logs;
+create policy "audit_logs_select_project_participant_or_admin"
 on public.audit_logs for select
-using (public.is_admin());
+using (
+  public.is_admin()
+  or (project_id is not null and public.is_project_participant(project_id))
+  or user_id = auth.uid()
+);
 
 drop policy if exists "audit_logs_insert_authenticated" on public.audit_logs;
 create policy "audit_logs_insert_authenticated"

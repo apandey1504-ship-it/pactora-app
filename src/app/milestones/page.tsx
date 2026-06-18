@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { BadgeCheck, Plus } from "lucide-react";
 import { DataSourceBadge } from "@/components/DataSourceBadge";
 import { DashboardShell } from "@/components/DashboardShell";
+import { MilestoneOverview } from "@/components/MilestoneOverview";
 import { MilestoneTable } from "@/components/MilestoneTable";
 import { EmptyState, ErrorState, LoadingState } from "@/components/ResourceState";
 import { useMilestones } from "@/hooks/use-milestones";
@@ -14,6 +15,7 @@ export default function MilestonesPage() {
   const { data: milestones, source, loading, error, refetch } = useMilestones();
   const { data: projects } = useProjects();
   const [showForm, setShowForm] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState("all");
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -82,6 +84,14 @@ export default function MilestonesPage() {
             <p className="mt-3 font-black text-navy">{item}</p>
           </div>
         ))}
+      </div>
+      <div className="mb-6">
+        <MilestoneOverview
+          milestones={milestones}
+          projects={projects}
+          selectedProjectId={selectedProjectId}
+          onSelectProject={setSelectedProjectId}
+        />
       </div>
       {loading ? <LoadingState /> : null}
       {!loading && milestones.length === 0 ? <EmptyState message="No milestones found." /> : null}

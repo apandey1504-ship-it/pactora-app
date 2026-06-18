@@ -7,6 +7,7 @@ import { DataSourceBadge } from "@/components/DataSourceBadge";
 import { DashboardCard } from "@/components/DashboardCard";
 import { DashboardShell } from "@/components/DashboardShell";
 import { MilestoneTable } from "@/components/MilestoneTable";
+import { ProjectActivityPanel } from "@/components/ProjectActivityPanel";
 import { ErrorState } from "@/components/ResourceState";
 import { useChangeRequests } from "@/hooks/use-change-requests";
 import { useMilestones } from "@/hooks/use-milestones";
@@ -18,7 +19,7 @@ export default function ContractorDashboardPage() {
   const { data: changeRequests, refetch: refetchChanges } = useChangeRequests();
   const contractorStats = [
     { label: "Assigned milestones", value: String(milestones.length), delta: milestoneSource },
-    { label: "Submitted work", value: String(milestones.filter((milestone) => milestone.status === "in_review").length), delta: "Awaiting client" },
+    { label: "Submitted work", value: String(milestones.filter((milestone) => milestone.status === "submitted").length), delta: "Awaiting client" },
     { label: "Extension requests", value: String(changeRequests.length), delta: "Change queue" },
     { label: "Messages", value: "Open", delta: "Project threads" }
   ];
@@ -36,6 +37,7 @@ export default function ContractorDashboardPage() {
     <DashboardShell
       title="Contractor dashboard"
       subtitle="Accept projects, submit work, request timeline changes, and keep clients aligned."
+      allowedRoles={["contractor"]}
       action={<div className="flex flex-wrap items-center gap-3"><DataSourceBadge source={milestoneSource} loading={loading} /><button className="inline-flex items-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white"><FileUp size={17} /> Submit work</button></div>}
     >
       {error ? <div className="mb-6"><ErrorState message={`Supabase request failed: ${error}`} /></div> : null}
@@ -63,6 +65,9 @@ export default function ContractorDashboardPage() {
             <ChangeRequestCard key={request.id} request={request} onContractorAccept={handleAcceptChange} />
           ))}
         </section>
+      </div>
+      <div className="mt-6">
+        <ProjectActivityPanel title="Work activity" />
       </div>
     </DashboardShell>
   );

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import {
@@ -19,7 +18,7 @@ import {
   Landmark,
   Users
 } from "lucide-react";
-import { getDashboardPathForRole, logout, updateProfileRole } from "@/lib/auth";
+import { logout } from "@/lib/auth";
 import { useAuth } from "@/hooks/use-auth";
 import type { UserRole } from "@/types/database";
 import { Logo } from "./Logo";
@@ -47,26 +46,13 @@ export const sharedItems = [
 export function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
-  const { profile, refreshProfile } = useAuth();
-  const [roleSaving, setRoleSaving] = useState(false);
+  const { profile } = useAuth();
   const currentRole = profile?.role ?? "client";
   const items = [dashboardItems[currentRole], ...sharedItems];
 
   async function handleLogout() {
     await logout();
     router.replace("/login");
-  }
-
-  async function handleRoleChange(role: UserRole) {
-    setRoleSaving(true);
-
-    try {
-      await updateProfileRole(role);
-      await refreshProfile();
-      router.replace(getDashboardPathForRole(role));
-    } finally {
-      setRoleSaving(false);
-    }
   }
 
   return (
@@ -86,19 +72,6 @@ export function Sidebar() {
           </Link>
         ))}
       </nav>
-      <div className="mt-6 rounded-lg border border-slate-200 bg-cloud p-3">
-        <label className="text-xs font-black uppercase tracking-wide text-slate-500">Test dashboard role</label>
-        <select
-          value={currentRole}
-          disabled={roleSaving}
-          onChange={(event) => handleRoleChange(event.target.value as UserRole)}
-          className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-black text-navy outline-none focus:border-purple"
-        >
-          <option value="client">Client</option>
-          <option value="contractor">Contractor</option>
-          <option value="admin">Admin</option>
-        </select>
-      </div>
       <div className="mt-10 rounded-lg bg-navy p-4 text-white">
         <p className="text-sm font-black">Assurance Mode</p>
         <p className="mt-2 text-sm leading-6 text-white/68">

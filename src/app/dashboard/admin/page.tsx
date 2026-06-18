@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Activity, Building2, FolderKanban, PauseCircle, ShieldAlert, Users } from "lucide-react";
+import { AuditTimeline } from "@/components/AuditTimeline";
 import { DataSourceBadge } from "@/components/DataSourceBadge";
 import { DashboardCard } from "@/components/DashboardCard";
 import { DashboardShell } from "@/components/DashboardShell";
@@ -82,6 +83,7 @@ export default function AdminDashboardPage() {
     <DashboardShell
       title="Admin dashboard"
       subtitle="Review platform health, disputes, business verification, and project controls."
+      allowedRoles={["admin"]}
       action={<div className="flex flex-wrap items-center gap-3"><DataSourceBadge source={source} loading={loading} /><button className="inline-flex items-center gap-2 rounded-lg bg-navy px-4 py-3 text-sm font-black text-white"><PauseCircle size={17} /> Freeze project</button></div>}
     >
       {error ? <div className="mb-6"><ErrorState message={`Projects request failed: ${error}`} /></div> : null}
@@ -178,22 +180,7 @@ export default function AdminDashboardPage() {
         </div>
         {auditError ? <div className="mt-4"><ErrorState message={`Audit log request failed: ${auditError}`} /></div> : null}
         {!auditError && auditLogs.length === 0 ? <div className="mt-4"><EmptyState message="No audit events yet." /></div> : null}
-        <div className="mt-4 space-y-3">
-          {auditLogs.map((log) => (
-            <div key={log.id} className="rounded-lg bg-cloud p-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="font-black text-navy">{log.action.replaceAll(".", " ")}</p>
-                <p className="text-xs font-black uppercase tracking-wide text-slate-400">{new Date(log.created_at).toLocaleString()}</p>
-              </div>
-              <p className="mt-2 text-sm font-semibold text-slate-500">
-                {log.project_id ? `Project ${log.project_id.slice(0, 8)}` : "Platform"} · {log.user_id ? `User ${log.user_id.slice(0, 8)}` : "System"}
-              </p>
-              <pre className="mt-3 max-h-24 overflow-auto rounded-lg bg-white p-3 text-xs font-semibold text-slate-500">
-                {JSON.stringify(log.metadata, null, 2)}
-              </pre>
-            </div>
-          ))}
-        </div>
+        <div className="mt-4"><AuditTimeline logs={auditLogs} /></div>
       </section>
     </DashboardShell>
   );

@@ -1,14 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { BriefcaseBusiness, Code2, Landmark, Layers3, Truck } from "lucide-react";
+import { BadgeDollarSign, BriefcaseBusiness, Building2, Code2, Landmark, Layers3, Scale, Truck, WandSparkles } from "lucide-react";
 import { DashboardShell } from "@/components/DashboardShell";
 
 const categories = [
+  { name: "Shipment and logistics", icon: Truck, signal: "Delivery windows, carrier evidence, penalty exposure", href: "/contracts" },
+  { name: "Agency and creative work", icon: WandSparkles, signal: "Scopes, revision rounds, approval proof", href: "/milestones" },
   { name: "Software delivery", icon: Code2, signal: "Milestones, QA evidence, scope changes", href: "/milestones" },
+  { name: "Finance operations", icon: Landmark, signal: "Payment holds, release readiness, audit logs", href: "/payments" },
   { name: "Professional services", icon: BriefcaseBusiness, signal: "Approvals, documents, timelines", href: "/contracts" },
-  { name: "Vendor procurement", icon: Truck, signal: "Trust score, payment reliability, disputes", href: "/trust-score" },
-  { name: "Finance operations", icon: Landmark, signal: "Payment placeholders, approvals, audit logs", href: "/payments" }
+  { name: "Construction and field work", icon: Building2, signal: "Site evidence, change orders, delay claims", href: "/change-requests" },
+  { name: "Legal and compliance", icon: Scale, signal: "Contract versions, signed records, dispute history", href: "/contracts" },
+  { name: "Procurement and vendors", icon: BadgeDollarSign, signal: "Trust score, payment reliability, disputes", href: "/trust-score" }
 ];
 
 export default function CategoriesPage() {

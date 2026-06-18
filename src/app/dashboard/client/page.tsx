@@ -7,6 +7,7 @@ import { DataSourceBadge } from "@/components/DataSourceBadge";
 import { DashboardCard } from "@/components/DashboardCard";
 import { DashboardShell } from "@/components/DashboardShell";
 import { MilestoneOverview } from "@/components/MilestoneOverview";
+import { ProjectActivityPanel } from "@/components/ProjectActivityPanel";
 import { ProjectCard } from "@/components/ProjectCard";
 import { EmptyState, ErrorState, LoadingState } from "@/components/ResourceState";
 import { useAuth } from "@/hooks/use-auth";
@@ -40,7 +41,7 @@ export default function ClientDashboardPage() {
   const protectedTimeDays = projects.length * 14;
   const insuranceReserve = Math.round(protectedValue * 0.03);
   const averageTrust = Math.round(projects.reduce((total, project) => total + project.trustScore, 0) / Math.max(projects.length, 1));
-  const pendingMilestones = milestones.filter((milestone) => milestone.status === "pending" || milestone.status === "in_review");
+  const pendingMilestones = milestones.filter((milestone) => milestone.status === "pending" || milestone.status === "submitted" || milestone.status === "revision_requested");
   const dashboardStats = [
     { label: "Active projects", value: String(projects.length), delta: profile?.role ?? "client" },
     { label: "Protected value", value: `$${(protectedValue / 1000000).toFixed(1)}M`, delta: source },
@@ -82,6 +83,7 @@ export default function ClientDashboardPage() {
     <DashboardShell
       title="Client dashboard"
       subtitle="Manage project assurance, approvals, change requests, and contractor trust."
+      allowedRoles={["client"]}
       action={<div className="flex flex-wrap items-center gap-3"><DataSourceBadge source={source} loading={loading} /><button onClick={() => setShowProjectForm((value) => !value)} className="inline-flex items-center gap-2 rounded-lg bg-purple px-4 py-3 text-sm font-black text-white"><Plus size={17} /> Create project</button></div>}
     >
       {showProjectForm ? (
@@ -167,6 +169,9 @@ export default function ClientDashboardPage() {
           </div>
         </aside>
       </section>
+      <div className="mt-6">
+        <ProjectActivityPanel title="Agreement activity" />
+      </div>
     </DashboardShell>
   );
 }

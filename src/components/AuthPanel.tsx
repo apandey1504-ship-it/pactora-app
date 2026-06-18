@@ -20,10 +20,20 @@ function getDisplayError(error: unknown) {
   return "Authentication failed. If you have not signed up yet, create an account first.";
 }
 
-export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
+export function AuthPanel({
+  mode,
+  defaultRole = "client",
+  lockedRole,
+  portalLabel
+}: {
+  mode: "login" | "signup";
+  defaultRole?: UserRole;
+  lockedRole?: Exclude<UserRole, "admin" | "arbitrator">;
+  portalLabel?: string;
+}) {
   const isSignup = mode === "signup";
   const router = useRouter();
-  const [role, setRole] = useState<UserRole>("client");
+  const [role, setRole] = useState<UserRole>(lockedRole ?? defaultRole);
   const [countryCode, setCountryCode] = useState("+1");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -74,6 +84,11 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
               ? "Start protecting agreements with milestone approvals, scoped changes, and trust scoring."
               : "Sign in to review projects, approvals, payments, messages, and trust signals."}
           </p>
+          {portalLabel ? (
+            <p className="mt-4 inline-flex rounded-full bg-purple/10 px-3 py-1 text-xs font-black uppercase tracking-wide text-purple">
+              {portalLabel}
+            </p>
+          ) : null}
           {!isSupabaseConfigured ? (
             <p className="mt-5 rounded-lg bg-amber-50 p-3 text-sm font-bold leading-6 text-amber-800">
               Supabase is not connected yet. Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in `.env.local`, then restart the app.
@@ -106,18 +121,24 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
                     <input name="phone" inputMode="tel" placeholder="Mobile number" className="w-full rounded-lg border border-slate-200 px-4 py-3 outline-none focus:border-purple focus:ring-4 focus:ring-purple/10" />
                   </div>
                 </div>
-                <label className="block">
-                  <span className="text-sm font-bold text-navy">Role</span>
-                  <select
-                    value={role}
-                    onChange={(event) => setRole(event.target.value as UserRole)}
-                    className="mt-2 w-full rounded-lg border border-slate-200 px-4 py-3 outline-none focus:border-purple focus:ring-4 focus:ring-purple/10"
-                  >
-                    <option value="client">Client</option>
-                    <option value="contractor">Contractor</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </label>
+                {lockedRole ? (
+                  <div className="rounded-lg bg-cloud p-4">
+                    <p className="text-sm font-bold text-slate-500">Account type</p>
+                    <p className="mt-1 text-lg font-black capitalize text-navy">{lockedRole}</p>
+                  </div>
+                ) : (
+                  <label className="block">
+                    <span className="text-sm font-bold text-navy">Role</span>
+                    <select
+                      value={role}
+                      onChange={(event) => setRole(event.target.value as UserRole)}
+                      className="mt-2 w-full rounded-lg border border-slate-200 px-4 py-3 outline-none focus:border-purple focus:ring-4 focus:ring-purple/10"
+                    >
+                      <option value="client">Client</option>
+                      <option value="contractor">Contractor</option>
+                    </select>
+                  </label>
+                )}
               </>
             ) : null}
             <label className="block">
@@ -170,6 +191,18 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
               {isSignup ? "Login" : "Get started"}
             </Link>
           </p>
+          {isSignup ? (
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              <Link href="/signup/client" className="rounded-lg bg-cloud px-4 py-3 text-center text-sm font-black text-navy">Client signup</Link>
+              <Link href="/signup/contractor" className="rounded-lg bg-cloud px-4 py-3 text-center text-sm font-black text-navy">Contractor signup</Link>
+            </div>
+          ) : (
+            <div className="mt-4 grid gap-2 sm:grid-cols-3">
+              <Link href="/login/client" className="rounded-lg bg-cloud px-3 py-2 text-center text-xs font-black text-navy">Client login</Link>
+              <Link href="/login/contractor" className="rounded-lg bg-cloud px-3 py-2 text-center text-xs font-black text-navy">Contractor login</Link>
+              <Link href="/admin/login" className="rounded-lg bg-navy px-3 py-2 text-center text-xs font-black text-white">Admin login</Link>
+            </div>
+          )}
         </div>
       </section>
       <section className="hidden bg-navy p-10 text-white lg:block">
