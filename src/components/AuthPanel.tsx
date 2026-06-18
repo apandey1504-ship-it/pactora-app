@@ -181,6 +181,41 @@ export function AuthPanel({
                 className="mt-2 w-full rounded-lg border border-slate-200 px-4 py-3 outline-none focus:border-purple focus:ring-4 focus:ring-purple/10"
               />
             </label>
+            {isSignup ? (
+              <div className="space-y-3">
+                <label className="flex gap-3 rounded-lg bg-cloud p-3 text-sm font-bold leading-6 text-slate-600">
+                  <input
+                    name="termsConsent"
+                    type="checkbox"
+                    required
+                    className="mt-1 h-4 w-4 shrink-0 accent-purple"
+                  />
+                  <span>
+                    I agree to Pactora&apos;s{" "}
+                    <Link href="/terms" className="text-purple underline">
+                      Terms of Service
+                    </Link>
+                    ,{" "}
+                    <Link href="/privacy" className="text-purple underline">
+                      Privacy Policy
+                    </Link>
+                    , and{" "}
+                    <Link href="/payment-terms" className="text-purple underline">
+                      Payment Terms
+                    </Link>
+                    .
+                  </span>
+                </label>
+                <label className="flex gap-3 rounded-lg bg-cloud p-3 text-sm font-bold leading-6 text-slate-600">
+                  <input
+                    name="betaUpdatesConsent"
+                    type="checkbox"
+                    className="mt-1 h-4 w-4 shrink-0 accent-purple"
+                  />
+                  <span>I agree to receive product updates and private beta communications from Pactora.</span>
+                </label>
+              </div>
+            ) : null}
             {error ? (
               <div className="rounded-lg bg-rose-50 p-3 text-sm font-bold leading-6 text-rose-700">
                 <p>{error}</p>

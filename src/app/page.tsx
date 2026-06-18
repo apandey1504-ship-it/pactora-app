@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { Archive, ArrowRight, BadgeCheck, Clock3, FileCheck2, GitPullRequest, MessageSquareWarning, ShieldCheck, Sparkles, WalletCards } from "lucide-react";
+import { Archive, BadgeCheck, Clock3, FileCheck2, GitPullRequest, MessageSquareWarning, ShieldCheck, Sparkles, WalletCards } from "lucide-react";
 import { Header } from "@/components/Header";
 import { PricingCard } from "@/components/PricingCard";
+import { PublicFooter } from "@/components/PublicFooter";
 import { StatusBadge } from "@/components/StatusBadge";
 import { TrustScoreBadge } from "@/components/TrustScoreBadge";
 import { changeRequests, milestones, projects, trustSignals } from "@/lib/mock-data";
@@ -158,22 +159,7 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
-      <footer id="company" className="bg-white px-5 py-10 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
-          <p className="text-xl font-black">Pactora</p>
-          <div className="flex flex-wrap gap-4 text-sm font-bold text-slate-500">
-            <Link href="/terms">Terms</Link>
-            <Link href="/privacy">Privacy</Link>
-            <Link href="/contact">Contact</Link>
-          </div>
-          <Link href="/dashboard/client" className="inline-flex items-center gap-2 font-black text-purple">
-            Open dashboard <ArrowRight size={18} />
-          </Link>
-        </div>
-        <p className="mx-auto mt-6 max-w-7xl text-xs font-semibold leading-6 text-slate-500">
-          Pactora facilitates contract assurance workflows and milestone payment coordination through third-party payment providers. Pactora does not provide legal, banking, escrow, insurance, or financial advisory services unless expressly provided through licensed partners.
-        </p>
-      </footer>
+      <PublicFooter />
     </main>
   );
 }
